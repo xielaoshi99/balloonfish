@@ -30,7 +30,7 @@
     <el-row>
       <el-button class="linkBtn" @click="addLinkDialog = true" size="small" type="primary" plain>新建连接</el-button>
     </el-row>
-    <el-menu class="menu" @open="freshDB" :unique-opened="false">
+    <el-menu @open="freshDB" :unique-opened="false">
       <el-submenu :index="String(index)" :key="index" v-for="(link, index) in links">
         <template #title>
           <span>{{ link.name }}</span>
@@ -38,9 +38,9 @@
             {{ link.version }}
           </el-tag>
           <div class="iconWrapper3">
-            <img @click.stop="addDB(index)" class="icon1" src="./img/add.png" />
-            <img @click.stop="freshDB(index)" class="icon1" src="./img/fresh.png" />
-            <img @click.stop="deleteLink(index, link.name)" class="icon1" src="./img/delete.png" />
+            <img @click.stop="addDB(index)" class="icon1" src="/img/add.png" />
+            <img @click.stop="freshDB(index)" class="icon1" src="/img/fresh.png" />
+            <img @click.stop="deleteLink(index, link.name)" class="icon1" src="/img/delete.png" />
           </div>
         </template>
         <!-- 数据库层级 -->
@@ -73,7 +73,7 @@
   import { getVersion, showDatabases, createDatabase, dropDatabase, showSuperTables, showTables, selectData, dropTable, rawSqlWithDB } from '../utils/taosrestful'
   import { getLinks, AddALink, deleteALink } from '../utils/localDataStore'
   export default {
-    name: 'Aside',
+    name: 'LinkAside',
     props: {
       msg: String,
     },
@@ -129,7 +129,9 @@
       }
     },
     methods: {
-      cancelAddLink() {},
+      cancelAddLink() {
+        this.addLinkDialog = false
+      },
       testLink() {
         let payload = {
           ip: this.linkForm.host,
@@ -168,7 +170,7 @@
             getVersion(payload).then((_data) => {
               //连接成功，保存到本地
               AddALink({
-                name: this.linkForm.name||this.linkForm.host,
+                name: this.linkForm.name || this.linkForm.host,
                 host: this.linkForm.host,
                 port: this.linkForm.port,
                 user: this.linkForm.user,
@@ -248,6 +250,7 @@
       alartDB(link, dbName) {
         //切换数据库前先清空表
         this.dbInfo = this.makeDbInfo(link.dbs, dbName)
+        console.log(this.dbInfo)
         this.surperTables = []
         this.clearSurperTable()
         this.tables = []
@@ -262,6 +265,7 @@
         this.activeTab = '1'
         this.freshSurperTables()
         this.freshTables()
+        this.$emit('tableChanged', {}, '', this.dbInfo)
       },
       searchSurperTList() {
         this.SuperTdialog = false
@@ -283,7 +287,6 @@
               duration: 1000,
             })
             this.surperTables = data.data
-            console.log(this.surperTables)
           } else {
             this.$message({
               message: data.msg,
@@ -297,27 +300,10 @@
         })
       },
       makeDbInfo(dbs, dbName) {
-        let info = '无法获取数据库信息'
+        let info = {}
         dbs.forEach((item) => {
           if (item['name'] == dbName) {
-            info = `数据库名:&nbsp;&nbsp;${dbName}<br/>`
-            info += `创建时间:&nbsp;&nbsp;${item['created_time']}<br/>`
-            info += `可更新:&nbsp;&nbsp;${item['update'] == 0 ? '否' : '是'}<br/>`
-            info += `cache(MB):&nbsp;&nbsp;${item['cache(MB)']}<br/>`
-            info += `cachelast:&nbsp;&nbsp;${item['cachelast']}<br/>`
-            info += `comp:&nbsp;&nbsp;${item['comp']}<br/>`
-            info += `days:&nbsp;&nbsp;${item['days']}<br/>`
-            info += `fsync:&nbsp;&nbsp;${item['fsync']}<br/>`
-            info += `keep0,keep1,keep(D):&nbsp;&nbsp;${item['keep0,keep1,keep(D)']}<br/>`
-            info += `maxrows:&nbsp;&nbsp;${item['maxrows']}<br/>`
-            info += `minrows:&nbsp;&nbsp;${item['minrows']}<br/>`
-            info += `ntables:&nbsp;&nbsp;${item['ntables']}<br/>`
-            info += `quorum:&nbsp;&nbsp;${item['quorum']}<br/>`
-            info += `replica:&nbsp;&nbsp;${item['replica']}<br/>`
-            info += `status:&nbsp;&nbsp;${item['status']}<br/>`
-            info += `vgroups:&nbsp;&nbsp;${item['vgroups']}<br/>`
-            info += `wallevel:&nbsp;&nbsp;${item['wallevel']}<br/>`
-            info += `precision:&nbsp;&nbsp;${item['precision']}<br/>`
+            info = item
           }
         })
         return info
@@ -360,16 +346,9 @@
         this.loadingSurperList = true
         showSuperTables(this.theDB, payload).then((data) => {
           if (data.res) {
-            //拉取超级表成功
-            this.$message({
-              message: '刷新成功',
-              type: 'success',
-              duration: 1000,
-            })
             this.surperTables = data.data
             this.superTableData[0].name = '超级表'
             this.superTableData[0].children = this.surperTables
-            console.log(this.surperTables)
           } else {
             this.$message({
               message: data.msg,
@@ -395,12 +374,6 @@
         this.loadingTableList = true
         showTables(this.theDB, payload).then((data) => {
           if (data.res) {
-            //拉取表成功
-            this.$message({
-              message: '刷新成功',
-              type: 'success',
-              duration: 1000,
-            })
             this.tables = data.data
             this.TableData[0].table_name = '表'
             this.TableData[0].children = this.tables
@@ -413,6 +386,19 @@
           }
           this.loadingTableList = false
         })
+      },
+      superTableNodeClick(data) {
+        console.log(this.$parent)
+        if (data.created_time) {
+          this.$emit('addTab', '超级表' + data.name)
+        }
+        this.$emit('tableChanged', data, 'super', this.dbInfo)
+      },
+      tableNodeClick(data) {
+        if (data.uid) {
+          this.$emit('addTab', '表' + data.table_name)
+        }
+        this.$emit('tableChanged', data, 'table', this.dbInfo)
       },
     },
   }
