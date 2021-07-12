@@ -38,18 +38,6 @@
             {{ link.version }}
           </el-tag>
         </template>
-        <!-- 数据库层级 -->
-        <!-- <el-form size="mini">
-          <el-row>
-            <el-col :span="24">
-              <el-form-item label="请选择数据库：">
-                <el-select style="width: 98%" v-model="selectedDbName" @change="alartDB(link, selectedDbName)" filterable default-first-option>
-                  <el-option v-for="db in link.dbs" :key="db.name" :label="db.name" :value="db.name"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form> -->
         <el-table
           :data="link.dbs"
           style="width: 100%"
@@ -61,9 +49,9 @@
           "
         >
           <el-table-column type="expand">
-            <template>
-              <el-tree :data="superTableData" :props="superTableTreeProps" @node-click="superTableNodeClick"></el-tree>
-              <el-tree :data="TableData" :props="tableTreeProps" @node-click="tableNodeClick"></el-tree>
+            <template #default="props">
+              <STableTree :db="props.row.name" :link="link" @addTab="addTab"></STableTree>
+              <TableTree :db="props.row.name" :link="link" @addTab="addTab"></TableTree>
             </template>
           </el-table-column>
           <el-table-column prop="name"></el-table-column>
@@ -75,34 +63,19 @@
 <script>
   import { getVersion, showDatabases, createDatabase, dropDatabase, showSuperTables, showTables, dropTable } from '../utils/taosrestful'
   import { getLinks, AddALink, deleteALink } from '../utils/localDataStore'
+  import STableTree from '../components/STableTree.vue'
+  import TableTree from '../components/TableTree.vue'
   export default {
     name: 'LinkAside',
+    components: {
+      STableTree,
+      TableTree,
+    },
     props: {
       msg: String,
     },
     data() {
       return {
-        superTableData: [
-          {
-            name: '',
-            children: [],
-          },
-        ],
-        TableData: [
-          {
-            table_name: '',
-            children: [],
-          },
-        ],
-        superTableTreeProps: {
-          children: 'children',
-          label: 'name',
-        },
-        tableTreeProps: {
-          children: 'children',
-          label: 'table_name',
-        },
-
         links: [],
         theLink: {}, //当前连接
         loadingLinks: false,
@@ -258,9 +231,6 @@
         //记录进入的数据库
         this.theLink = link
         this.theDB = dbName
-        //更新超级表页
-        this.freshSurperTables()
-        this.freshTables()
         this.$emit('tableChanged', {}, '', this.dbInfo)
       },
       makeDbInfo(dbs, dbName) {
@@ -272,71 +242,11 @@
         })
         return info
       },
-      freshSurperTables() {
-        //清理超级表列表
-        this.surperTables = []
-        //清理选中的超级表和具体数据
-        let payload = {
-          ip: this.theLink.host,
-          port: this.theLink.port,
-          user: this.theLink.user,
-          password: this.theLink.password,
-        }
-        this.loadingSurperList = true
-        showSuperTables(this.theDB, payload).then((data) => {
-          if (data.res) {
-            this.surperTables = data.data
-            this.superTableData[0].name = '超级表'
-            this.superTableData[0].children = this.surperTables
-          } else {
-            this.$message({
-              message: data.msg,
-              type: 'error',
-              duration: 1000,
-            })
-          }
-          this.loadingSurperList = false
-        })
-      },
-      freshTables() {
-        //清理表列表
-        this.tables = []
-        let payload = {
-          ip: this.theLink.host,
-          port: this.theLink.port,
-          user: this.theLink.user,
-          password: this.theLink.password,
-        }
-        this.loadingTableList = true
-        showTables(this.theDB, payload).then((data) => {
-          if (data.res) {
-            this.tables = data.data
-            this.TableData[0].table_name = '表'
-            this.TableData[0].children = this.tables
-          } else {
-            this.$message({
-              message: data.msg,
-              type: 'error',
-              duration: 1000,
-            })
-          }
-          this.loadingTableList = false
-        })
-      },
-      superTableNodeClick(data) {
-        if (data.created_time) {
-          this.$emit('addTab', '超级表' + data.name + '@' + this.theDB + ' | ' + this.theLink.host + ':' + this.theLink.port, data.name, 'STableView')
-        }
-        this.$emit('tableChanged', data, 'super', this.dbInfo)
-      },
-      tableNodeClick(data) {
-        if (data.uid) {
-          this.$emit('addTab', '表' + data.table_name + '@' + this.theDB + ' | ' + this.theLink.host + ':' + this.theLink.port, data.table_name, 'TableView')
-        }
-        this.$emit('tableChanged', data, 'table', this.dbInfo)
-      },
       dbTableExpand(row, expandedRows, link) {
-        this.alartDB(this.link, row.name)
+        this.alartDB(link, row.name)
+      },
+      addTab(newTabTitle, table, type) {
+        this.$emit('addTab', newTabTitle, table, type)
       },
     },
   }
