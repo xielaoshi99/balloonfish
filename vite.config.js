@@ -5,7 +5,7 @@ module.exports = {
     '/@/': path.resolve(__dirname, './src'),
   },
   hostname: 'localhost', // 默认是 localhost
-  port: '8000', // 默认是 3000 端口
+  port: '1999', // 默认是 3000 端口
   open: true, // 浏览器自动打开
   https: false, // 是否开启 https
   ssr: false, // 服务端渲染

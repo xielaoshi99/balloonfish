@@ -37,40 +37,43 @@
           <el-tag type="success" size="mini" v-if="link.version">
             {{ link.version }}
           </el-tag>
-          <div class="iconWrapper3">
-            <img @click.stop="addDB(index)" class="icon1" src="/img/add.png" />
-            <img @click.stop="freshDB(index)" class="icon1" src="/img/fresh.png" />
-            <img @click.stop="deleteLink(index, link.name)" class="icon1" src="/img/delete.png" />
-          </div>
         </template>
         <!-- 数据库层级 -->
-        <el-form size="mini">
-          <el-form-item>
-            <el-row :gutter="6">
-              <el-col :span="12">
-                <el-select class="db-select" v-model="selectedDbName" placeholder="DB" @change="alartDB(link, selectedDbName)" filterable default-first-option>
+        <!-- <el-form size="mini">
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="请选择数据库：">
+                <el-select style="width: 98%" v-model="selectedDbName" @change="alartDB(link, selectedDbName)" filterable default-first-option>
                   <el-option v-for="db in link.dbs" :key="db.name" :label="db.name" :value="db.name"></el-option>
                 </el-select>
-              </el-col>
-              <!-- <el-col :span="6">
-                        <el-button class="dbButton" icon="el-icon-search">
-                        </el-button>
-                      </el-col>
-                      <el-col :span="6">
-                        <el-button class="dbButton" icon="el-icon-search">
-                        </el-button>
-                      </el-col> -->
-            </el-row>
-          </el-form-item>
-        </el-form>
-        <el-tree :data="superTableData" :props="superTableTreeProps" @node-click="superTableNodeClick"></el-tree>
-        <el-tree :data="TableData" :props="tableTreeProps" @node-click="tableNodeClick"></el-tree>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form> -->
+        <el-table
+          :data="link.dbs"
+          style="width: 100%"
+          size="mini"
+          @expand-change="
+            (row, expandedRows) => {
+              dbTableExpand(row, expandedRows, link)
+            }
+          "
+        >
+          <el-table-column type="expand">
+            <template>
+              <el-tree :data="superTableData" :props="superTableTreeProps" @node-click="superTableNodeClick"></el-tree>
+              <el-tree :data="TableData" :props="tableTreeProps" @node-click="tableNodeClick"></el-tree>
+            </template>
+          </el-table-column>
+          <el-table-column prop="name"></el-table-column>
+        </el-table>
       </el-submenu>
     </el-menu>
   </div>
 </template>
 <script>
-  import { getVersion, showDatabases, createDatabase, dropDatabase, showSuperTables, showTables, selectData, dropTable, rawSqlWithDB } from '../utils/taosrestful'
+  import { getVersion, showDatabases, createDatabase, dropDatabase, showSuperTables, showTables, dropTable } from '../utils/taosrestful'
   import { getLinks, AddALink, deleteALink } from '../utils/localDataStore'
   export default {
     name: 'LinkAside',
@@ -99,7 +102,7 @@
           children: 'children',
           label: 'table_name',
         },
-        selectedDbName: '',
+
         links: [],
         theLink: {}, //当前连接
         loadingLinks: false,
@@ -208,6 +211,7 @@
           user: theLink.user,
           password: theLink.password,
         }
+        this.$emit('linkChanged', payload)
         this.loadingLinks = true
         showDatabases(payload).then((data) => {
           this.loadingLinks = false
@@ -218,7 +222,6 @@
               duration: 1000,
             })
             this.links[key].dbs = data.data
-            //TODO展开菜单
           } else {
             //连接失败，1.提示 2.删除当前连接 3.重新连接
             //1
@@ -250,54 +253,15 @@
       alartDB(link, dbName) {
         //切换数据库前先清空表
         this.dbInfo = this.makeDbInfo(link.dbs, dbName)
-        console.log(this.dbInfo)
         this.surperTables = []
-        this.clearSurperTable()
         this.tables = []
-        this.clearTable()
-
         //记录进入的数据库
         this.theLink = link
         this.theDB = dbName
-
         //更新超级表页
-        this.drawer = false
-        this.activeTab = '1'
         this.freshSurperTables()
         this.freshTables()
         this.$emit('tableChanged', {}, '', this.dbInfo)
-      },
-      searchSurperTList() {
-        this.SuperTdialog = false
-        this.surperTables = []
-        this.clearSurperTable()
-        let payload = {
-          ip: this.theLink.host,
-          port: this.theLink.port,
-          user: this.theLink.user,
-          password: this.theLink.password,
-        }
-        this.loadingSurperList = true
-        showSuperTables(this.theDB, payload, (like = this.SuperTdialogText)).then((data) => {
-          if (data.res) {
-            //拉取超级表成功
-            this.$message({
-              message: '查找成功',
-              type: 'success',
-              duration: 1000,
-            })
-            this.surperTables = data.data
-          } else {
-            this.$message({
-              message: data.msg,
-              type: 'error',
-              duration: 1000,
-            })
-            this.freshSurperTables()
-          }
-          this.SuperTdialogText = ''
-          this.loadingSurperList = false
-        })
       },
       makeDbInfo(dbs, dbName) {
         let info = {}
@@ -308,35 +272,10 @@
         })
         return info
       },
-      clearSurperTable() {
-        this.surperTableName = ''
-        this.totalSurperTable = 0
-        this.surperTableData = []
-        this.surperTableLabel = []
-        this.surperTableFilter = {
-          fields: [],
-          surperDateRange: [],
-          surperTSearchText: '',
-          surperTSearchColumn: '',
-        }
-      },
-      clearTable() {
-        this.tableName = ''
-        this.totalTable = 0
-        this.tableData = []
-        this.tableLabel = []
-        this.tableFilter = {
-          fields: [],
-          dateRange: [],
-          tableSearchText: '',
-          tableSearchColumn: '',
-        }
-      },
       freshSurperTables() {
         //清理超级表列表
         this.surperTables = []
         //清理选中的超级表和具体数据
-        this.clearSurperTable()
         let payload = {
           ip: this.theLink.host,
           port: this.theLink.port,
@@ -362,9 +301,6 @@
       freshTables() {
         //清理表列表
         this.tables = []
-        //清理选中的表和具体数据
-        this.clearTable()
-
         let payload = {
           ip: this.theLink.host,
           port: this.theLink.port,
@@ -388,17 +324,19 @@
         })
       },
       superTableNodeClick(data) {
-        console.log(this.$parent)
         if (data.created_time) {
-          this.$emit('addTab', '超级表' + data.name)
+          this.$emit('addTab', '超级表' + data.name + '@' + this.theDB + ' | ' + this.theLink.host + ':' + this.theLink.port, data.name, 'STableView')
         }
         this.$emit('tableChanged', data, 'super', this.dbInfo)
       },
       tableNodeClick(data) {
         if (data.uid) {
-          this.$emit('addTab', '表' + data.table_name)
+          this.$emit('addTab', '表' + data.table_name + '@' + this.theDB + ' | ' + this.theLink.host + ':' + this.theLink.port, data.table_name, 'TableView')
         }
         this.$emit('tableChanged', data, 'table', this.dbInfo)
+      },
+      dbTableExpand(row, expandedRows, link) {
+        this.alartDB(this.link, row.name)
       },
     },
   }

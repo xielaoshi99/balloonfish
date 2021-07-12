@@ -11,27 +11,20 @@
   height: 100%;
 }
 
-.el-drawer {
-  padding: 0px 0px 0px 20px;
-  width: 600px;
-}
-
 .linkBtn {
-  width: 90%;
+  width: 100%;
 }
 
 .el-menu {
   border: none;
   margin-top: 10px;
-  width: 90%;
+  width: 100%;
 }
 
 .el-dialog {
   z-index: 1000;
 }
-.main {
-  height: 100%;
-}
+
 .mainContent {
   height: 100%;
 }
@@ -42,14 +35,14 @@
 
 .mainTab {
   width: 100%;
-  border: none;
-  box-shadow: none;
+  padding: 8px !important;
 }
 .tableWrapper {
   height: 100%;
 }
 .linksMenu {
-  padding: 20px 0px 0px 20px;
+  width: 350px !important;
+  margin: 8px !important;
 }
 .el-aside {
   /* text-align: center; */
@@ -57,7 +50,8 @@
 }
 
 .el-main {
-  padding-top: 0;
+  padding: 0;
+  margin: 8px;
 }
 
 el-footer {
@@ -71,7 +65,9 @@ el-footer {
 .linkformstyle {
   margin: 0 10px;
 }
-
+.dbSelect {
+  width: 100%;
+}
 .icon {
   height: 12px;
   width: 12px;
@@ -165,10 +161,6 @@ el-footer {
 
 .surperTSearchRow {
   margin: 20px 0 20px 0;
-}
-
-.el-select {
-  width: 130px;
 }
 
 .input-with-select .el-input-group__prepend {

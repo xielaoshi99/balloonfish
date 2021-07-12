@@ -2,6 +2,7 @@ import axios from 'axios'
 
 export async function sendRequest(sqlStr, payload) {
   // console.log(sqlStr)
+  console.log(payload)
   try {
     let res = await axios.post(`http://${payload.ip}:${payload.port}/rest/sql`, sqlStr, {
       auth: {

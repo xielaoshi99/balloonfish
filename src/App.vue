@@ -1,31 +1,31 @@
 <template>
-  <el-container class="main">
-    <el-container class="mainContent">
-      <el-aside class="linksMenu">
-        <LinkAside @tableChanged="tableChangedListener" @addTab="addTab"></LinkAside>
-      </el-aside>
-      <el-main>
-        <el-tabs v-model="activeTab" type="card" closable @tab-remove="removeTab">
-          <el-tab-pane :key="item.name" v-for="item in mainTabs" :label="item.title" :name="item.name">
-            <component :is="item.content" />
-          </el-tab-pane>
-        </el-tabs>
-      </el-main>
-      <el-aside class="linksMenu">
-        <InfoAside :tabledata="selectedTable" :type="selectedType" :dbdata="selectedDB"></InfoAside>
-      </el-aside>
-    </el-container>
+  <el-container>
+    <el-aside class="linksMenu">
+      <LinkAside @tableChanged="tableChangedListener" @addTab="addTab" @linkChanged="linkChanged"></LinkAside>
+    </el-aside>
+    <el-main class="main">
+      <el-tabs v-model="activeTab" type="card" closable @tab-remove="removeTab">
+        <el-tab-pane :key="item.name" v-for="item in mainTabs" :label="item.title" :name="item.name">
+          <component :is="item.content" :tablename="item.table" :dbname="selectedDB.name" :link="theLink" />
+        </el-tab-pane>
+      </el-tabs>
+    </el-main>
+    <el-aside class="linksMenu">
+      <InfoAside :tabledata="selectedTable" :type="selectedType" :dbdata="selectedDB"></InfoAside>
+    </el-aside>
   </el-container>
 </template>
 
 <script>
-  import HelloWorld from './components/HelloWorld.vue'
+  import STableView from './components/STableView.vue'
+  import TableView from './components/TableView.vue'
   import LinkAside from './components/LinkAside.vue'
   import InfoAside from './components/InfoAside.vue'
   export default {
     name: 'App',
     components: {
-      HelloWorld,
+      STableView,
+      TableView,
       LinkAside,
       InfoAside,
     },
@@ -36,25 +36,15 @@
         activeTab: 1,
         mainTabs: [
           {
-            title: 'Tab 1',
+            title: '欢迎',
             name: 1,
-            content: 'HelloWorld',
-          },
-          {
-            title: 'Tab 2',
-            name: 2,
-            content: 'HelloWorld',
           },
         ],
-        tabIndex: 2,
+        tabIndex: 1,
         selectedTable: {},
         selectedType: '',
         selectedDB: {},
-        superTableData: [],
-        links: [],
         theLink: {}, //当前连接
-        loadingLinks: false,
-        addLinkDialog: false,
         linkForm: {
           name: '',
           host: '',
@@ -86,14 +76,24 @@
         this.activeTab = activeName
         this.mainTabs = tabs.filter((tab) => tab.name !== targetName)
       },
-      addTab(newTabTitle) {
+      addTab(newTabTitle, table, type) {
+        for (let i = 0; i < this.mainTabs.length; i++) {
+          if (newTabTitle == this.mainTabs[i].title) {
+            this.activeTab = this.mainTabs[i].name
+            return false
+          }
+        }
         let newTabName = ++this.tabIndex + ''
         this.mainTabs.push({
           title: newTabTitle,
           name: newTabName,
-          content: 'HelloWorld',
+          table: table,
+          content: type,
         })
         this.activeTab = newTabName
+      },
+      linkChanged(link) {
+        this.theLink = link
       },
     },
   }
