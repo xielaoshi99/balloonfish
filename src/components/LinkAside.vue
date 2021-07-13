@@ -37,6 +37,12 @@
           <el-tag type="success" size="mini" v-if="link.version">
             {{ link.version }}
           </el-tag>
+          <div class="connection-opt-icons">
+            <i title="刷新" class="connection-right-icon fa fa-refresh font-weight-bold" @click.stop.prevent="freshDB(index)"></i>
+            <i title="编辑连接" class="connection-right-icon fa fa-edit font-weight-bold" @click.stop.prevent="editLink(index)"></i>
+            <i title="自定义SQL" class="connection-right-icon fa fa-terminal font-weight-bold" @click.stop.prevent="runSQL()"></i>
+            <i title="删除连接" class="connection-right-icon fa fa-trash-o font-weight-bold" @click.stop.prevent="deleteLink()"></i>
+          </div>
         </template>
         <el-table
           :data="link.dbs"
@@ -106,7 +112,25 @@
     },
     methods: {
       cancelAddLink() {
+        this.linkForm = {
+          name: '',
+          host: '',
+          port: '6041',
+          user: '',
+          password: '',
+        }
         this.addLinkDialog = false
+      },
+      editLink(index) {
+        console.log(this.links[index])
+        this.linkForm = {
+          name: this.links[index].name,
+          host: this.links[index].host,
+          port: this.links[index].port,
+          user: this.links[index].user,
+          password: this.links[index].password,
+        }
+        this.addLinkDialog = true
       },
       testLink() {
         let payload = {
@@ -246,11 +270,45 @@
         this.alartDB(link, row.name)
       },
       addTab(newTabTitle, table, type) {
-        this.$emit('addTab', newTabTitle, table, type)
+        let icon
+        if (type == 'STableView') {
+          icon = 'fa fa-sitemap'
+        } else if (type == 'TableView') {
+          icon = 'fa fa-table'
+        }
+        this.$emit('addTab', newTabTitle, table, type, icon)
       },
       tableChanged(table, type, db) {
         this.$emit('tableChanged', table, type, db)
       },
+      deleteLink() {
+        alert(111)
+      },
     },
   }
 </script>
+<style>
+  .font-weight-bold {
+    font-weight: bold;
+  }
+  .connection-right-icon {
+    display: inline-block;
+    font-size: 16px;
+    /*font-weight: bold;*/
+    padding: 3px;
+    margin-right: 0px;
+    transition: background 0.2s;
+  }
+  .connection-right-icon:hover {
+    background: #dcdee0;
+    border-radius: 3px;
+  }
+  .connection-opt-icons {
+    position: absolute;
+    right: 25px;
+    top: -2px;
+  }
+  .el-submenu__icon-arrow {
+    right: 10px !important;
+  }
+</style>

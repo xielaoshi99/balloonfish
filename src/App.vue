@@ -7,7 +7,7 @@
       <el-tabs v-model="activeTab" type="card" closable @tab-remove="removeTab">
         <el-tab-pane :key="item.name" v-for="item in mainTabs" :name="item.name">
           <template #label>
-            <i class="fa fa-key"></i>
+            <i :class="item.icon"></i>
             <span>{{ item.title }}</span>
           </template>
           <component :is="item.content" :tablename="item.table" :dbname="selectedDB.name" :link="theLink" />
@@ -40,8 +40,9 @@
         activeTab: 1,
         mainTabs: [
           {
-            title: '欢迎',
+            title: ' 欢迎',
             name: 1,
+            icon: 'fa fa-home',
           },
         ],
         tabIndex: 1,
@@ -80,7 +81,7 @@
         this.activeTab = activeName
         this.mainTabs = tabs.filter((tab) => tab.name !== targetName)
       },
-      addTab(newTabTitle, table, type) {
+      addTab(newTabTitle, table, type, icon) {
         for (let i = 0; i < this.mainTabs.length; i++) {
           if (newTabTitle == this.mainTabs[i].title) {
             this.activeTab = this.mainTabs[i].name
@@ -93,6 +94,7 @@
           name: newTabName,
           table: table,
           content: type,
+          icon: icon,
         })
         this.activeTab = newTabName
       },
