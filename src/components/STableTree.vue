@@ -27,9 +27,6 @@
       this.freshSurperTables()
     },
     methods: {
-      superTableNodeClick(data) {
-        console.log(data)
-      },
       freshSurperTables() {
         //清理选中的超级表和具体数据
         let payload = {
@@ -38,8 +35,8 @@
           user: this.link.user,
           password: this.link.password,
         }
-        if (this.db) {
-          showSuperTables(this.db, payload).then((data) => {
+        if (this.db.name) {
+          showSuperTables(this.db.name, payload).then((data) => {
             if (data.res) {
               this.superTableData[0].name = '超级表'
               this.superTableData[0].children = data.data
@@ -55,9 +52,9 @@
       },
       superTableNodeClick(data) {
         if (data.created_time) {
-          this.$emit('addTab', '超级表' + data.name + '@' + this.db + ' | ' + this.link.host + ':' + this.link.port, data.name, 'STableView')
+          this.$emit('addTab', ' 超级表 ' + data.name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data.name, 'STableView')
         }
-        this.$emit('tableChanged', data, 'super', this.dbInfo)
+        this.$emit('tableChanged', data, 'super', this.db)
       },
     },
   }

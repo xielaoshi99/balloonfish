@@ -50,8 +50,8 @@
         >
           <el-table-column type="expand">
             <template #default="props">
-              <STableTree :db="props.row.name" :link="link" @addTab="addTab"></STableTree>
-              <TableTree :db="props.row.name" :link="link" @addTab="addTab"></TableTree>
+              <STableTree :db="props.row" :link="link" @addTab="addTab" @tableChanged="tableChanged"></STableTree>
+              <TableTree :db="props.row" :link="link" @addTab="addTab" @tableChanged="tableChanged"></TableTree>
             </template>
           </el-table-column>
           <el-table-column prop="name"></el-table-column>
@@ -83,7 +83,7 @@
         linkForm: {
           name: '',
           host: '',
-          port: '',
+          port: '6041',
           user: '',
           password: '',
         },
@@ -247,6 +247,9 @@
       },
       addTab(newTabTitle, table, type) {
         this.$emit('addTab', newTabTitle, table, type)
+      },
+      tableChanged(table, type, db) {
+        this.$emit('tableChanged', table, type, db)
       },
     },
   }

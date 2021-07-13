@@ -1,16 +1,20 @@
 <template>
   <el-container>
     <el-aside class="linksMenu">
-      <LinkAside @tableChanged="tableChangedListener" @addTab="addTab" @linkChanged="linkChanged"></LinkAside>
+      <LinkAside @tableChanged="tableChanged" @addTab="addTab" @linkChanged="linkChanged"></LinkAside>
     </el-aside>
     <el-main class="main">
       <el-tabs v-model="activeTab" type="card" closable @tab-remove="removeTab">
-        <el-tab-pane :key="item.name" v-for="item in mainTabs" :label="item.title" :name="item.name">
+        <el-tab-pane :key="item.name" v-for="item in mainTabs" :name="item.name">
+          <template #label>
+            <i class="fa fa-key"></i>
+            <span>{{ item.title }}</span>
+          </template>
           <component :is="item.content" :tablename="item.table" :dbname="selectedDB.name" :link="theLink" />
         </el-tab-pane>
       </el-tabs>
     </el-main>
-    <el-aside class="linksMenu">
+    <el-aside class="infoMenu">
       <InfoAside :tabledata="selectedTable" :type="selectedType" :dbdata="selectedDB"></InfoAside>
     </el-aside>
   </el-container>
@@ -55,7 +59,7 @@
       }
     },
     methods: {
-      tableChangedListener(table, type, db) {
+      tableChanged(table, type, db) {
         this.selectedTable = table
         this.selectedDB = db
         this.selectedType = type
