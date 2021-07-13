@@ -1,5 +1,3 @@
-# TDengineManager3
+# balloonfish
 
-#### 介绍
-
-基于 VUE3 + electron 的TDengine 管理工具
+一款基于electron+vue3+vite2.0的TDengine时序库可视化管理工具
