@@ -14,9 +14,9 @@
         </el-tab-pane>
       </el-tabs>
     </el-main>
-    <el-aside class="infoMenu">
+    <!-- <el-aside class="infoMenu">
       <InfoAside :tabledata="selectedTable" :type="selectedType" :dbdata="selectedDB"></InfoAside>
-    </el-aside>
+    </el-aside> -->
   </el-container>
 </template>
 

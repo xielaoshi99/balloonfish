@@ -26,6 +26,8 @@
       </span>
     </template>
   </el-dialog>
+  <!-- 右键菜单 -->
+  <ContextMenu :menuVisible="menuVisible" :type="rightPanelType"></ContextMenu>
   <div v-loading="loadingLinks">
     <el-row>
       <el-button class="linkBtn" @click="addLinkDialog = true" size="small" type="primary" plain>新建连接</el-button>
@@ -40,14 +42,13 @@
           <div class="connection-opt-icons">
             <i title="刷新" class="connection-right-icon fa fa-refresh font-weight-bold" @click.stop.prevent="freshDB(index)"></i>
             <i title="编辑连接" class="connection-right-icon fa fa-edit font-weight-bold" @click.stop.prevent="editLink(index)"></i>
-            <i title="自定义SQL" class="connection-right-icon fa fa-terminal font-weight-bold" @click.stop.prevent="runSQL()"></i>
             <i title="删除连接" class="connection-right-icon fa fa-trash-o font-weight-bold" @click.stop.prevent="deleteLink()"></i>
           </div>
         </template>
-        <div class="dbButtonGroup">
+        <!-- <div class="dbButtonGroup">
           <span style="padding-left: 10px">数据库</span>
           <el-button size="mini" type="primary" plain style="float: right"><i class="fa fa-plus-circle"></i></el-button>
-        </div>
+        </div> -->
         <el-table
           class="customer-no-border-table"
           :data="link.dbs"
@@ -59,11 +60,36 @@
           "
           :cell-class-name="rowClass"
           :show-header="false"
+          @row-contextmenu="
+            (row, column, event) => {
+              rightClick(row, column, event, 'db')
+            }
+          "
         >
           <el-table-column type="expand" width="40">
             <template #default="props">
-              <STableTree :db="props.row" :link="link" @addTab="addTab" @tableChanged="tableChanged"></STableTree>
-              <TableTree :db="props.row" :link="link" @addTab="addTab" @tableChanged="tableChanged"></TableTree>
+              <STableTree
+                :db="props.row"
+                :link="link"
+                @addTab="addTab"
+                @tableChanged="tableChanged"
+                @node-contextmenu="
+                  (event, nodedata, node) => {
+                    rightClick(node, nodedata, event, 'stable')
+                  }
+                "
+              ></STableTree>
+              <TableTree
+                :db="props.row"
+                :link="link"
+                @addTab="addTab"
+                @tableChanged="tableChanged"
+                @node-contextmenu="
+                  (event, nodedata, node) => {
+                    rightClick(node, nodedata, event, 'table')
+                  }
+                "
+              ></TableTree>
             </template>
           </el-table-column>
           <el-table-column>
@@ -82,11 +108,13 @@
   import { getLinks, AddALink, deleteALink } from '../utils/localDataStore'
   import STableTree from '../components/STableTree.vue'
   import TableTree from '../components/TableTree.vue'
+  import ContextMenu from '../components/ContextMenu.vue'
   export default {
     name: 'LinkAside',
     components: {
       STableTree,
       TableTree,
+      ContextMenu,
     },
     props: {
       msg: String,
@@ -104,6 +132,8 @@
           user: '',
           password: '',
         },
+        menuVisible: false,
+        rightPanelType: '',
       }
     },
     mounted: function () {
@@ -296,6 +326,37 @@
       },
       rowClass() {
         return 'dbCol'
+      },
+      rightClick(row, column, event, type) {
+        if (type != 'db') {
+          if (column.children) {
+            return false
+          }
+        }
+        this.menuVisible = false // 先把模态框关死，目的是 第二次或者第n次右键鼠标的时候 它默认的是true
+        this.menuVisible = true // 显示模态窗口，跳出自定义菜单栏
+        event.preventDefault() //关闭浏览器右键默认事件
+        this.rightPanelType = type
+        var menu = document.querySelector('.menu1')
+        this.styleMenu(menu)
+      },
+      foo() {
+        // 取消鼠标监听事件 菜单栏
+        this.menuVisible = false
+        document.removeEventListener('click', this.foo) // 关掉监听，
+      },
+      styleMenu(menu) {
+        if (event.clientX > 1800) {
+          menu.style.left = event.clientX - 100 + 'px'
+        } else {
+          menu.style.left = event.clientX + 1 + 'px'
+        }
+        document.addEventListener('click', this.foo) // 给整个document新增监听鼠标事件，点击任何位置执行foo方法
+        if (event.clientY > 700) {
+          menu.style.top = event.clientY - 30 + 'px'
+        } else {
+          menu.style.top = event.clientY - 10 + 'px'
+        }
       },
     },
   }

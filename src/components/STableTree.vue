@@ -1,5 +1,5 @@
 <template>
-  <el-tree :data="superTableData" @node-click="superTableNodeClick">
+  <el-tree :data="superTableData" @node-click="superTableNodeClick" @node-contextmenu="rightClick">
     <template v-slot="{ data }">
       <span>
         <i :class="data.icon"></i>

@@ -12,7 +12,6 @@
     "vue": "^3.0.11"
   },
   "devDependencies": {
-    "@vue/babel-plugin-jsx": "^1.0.6",
     "@vue/compiler-sfc": "^3.0.11",
     "vite": "^1.0.0-rc.13"
   }
