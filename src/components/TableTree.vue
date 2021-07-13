@@ -1,5 +1,12 @@
 <template>
-  <el-tree :data="TableData" :props="tableTreeProps" @node-click="tableNodeClick"></el-tree>
+  <el-tree :data="TableData" @node-click="tableNodeClick">
+    <template v-slot="{ data }">
+      <span>
+        <i :class="data.icon"></i>
+        {{ data.table_name }}
+      </span>
+    </template>
+  </el-tree>
 </template>
 <script>
   import { showTables } from '../utils/taosrestful'
@@ -11,10 +18,6 @@
     },
     data() {
       return {
-        tableTreeProps: {
-          children: 'children',
-          label: 'table_name',
-        },
         TableData: [
           {
             table_name: '',
@@ -40,6 +43,7 @@
               this.tables = data.data
               this.TableData[0].table_name = '表'
               this.TableData[0].children = this.tables
+              this.TableData[0].icon = 'fa fa-table'
             } else {
               this.$message({
                 message: data.msg,

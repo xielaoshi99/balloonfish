@@ -44,23 +44,34 @@
             <i title="删除连接" class="connection-right-icon fa fa-trash-o font-weight-bold" @click.stop.prevent="deleteLink()"></i>
           </div>
         </template>
+        <div class="dbButtonGroup">
+          <span style="padding-left: 10px">数据库</span>
+          <el-button size="mini" type="primary" plain style="float: right"><i class="fa fa-plus-circle"></i></el-button>
+        </div>
         <el-table
+          class="customer-no-border-table"
           :data="link.dbs"
           style="width: 100%"
-          size="mini"
           @expand-change="
             (row, expandedRows) => {
               dbTableExpand(row, expandedRows, link)
             }
           "
+          :cell-class-name="rowClass"
+          :show-header="false"
         >
-          <el-table-column type="expand">
+          <el-table-column type="expand" width="40">
             <template #default="props">
               <STableTree :db="props.row" :link="link" @addTab="addTab" @tableChanged="tableChanged"></STableTree>
               <TableTree :db="props.row" :link="link" @addTab="addTab" @tableChanged="tableChanged"></TableTree>
             </template>
           </el-table-column>
-          <el-table-column prop="name"></el-table-column>
+          <el-table-column>
+            <template #default="props">
+              <i class="fa fa-database"></i>
+              {{ props.row.name }}
+            </template>
+          </el-table-column>
         </el-table>
       </el-submenu>
     </el-menu>
@@ -122,7 +133,6 @@
         this.addLinkDialog = false
       },
       editLink(index) {
-        console.log(this.links[index])
         this.linkForm = {
           name: this.links[index].name,
           host: this.links[index].host,
@@ -284,10 +294,25 @@
       deleteLink() {
         alert(111)
       },
+      rowClass() {
+        return 'dbCol'
+      },
     },
   }
 </script>
 <style>
+  .dbCol .cell {
+    padding: 0px !important;
+  }
+  .dbCol {
+    padding: 3px !important;
+  }
+  .dbButtonGroup {
+    font-size: 15px;
+    height: 29px;
+    line-height: 29px;
+    padding-bottom: 5px;
+  }
   .font-weight-bold {
     font-weight: bold;
   }

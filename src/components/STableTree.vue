@@ -1,5 +1,12 @@
 <template>
-  <el-tree :data="superTableData" :props="superTableTreeProps" @node-click="superTableNodeClick"></el-tree>
+  <el-tree :data="superTableData" @node-click="superTableNodeClick">
+    <template v-slot="{ data }">
+      <span>
+        <i :class="data.icon"></i>
+        {{ data.name }}
+      </span>
+    </template>
+  </el-tree>
 </template>
 <script>
   import { showSuperTables } from '../utils/taosrestful'
@@ -11,10 +18,6 @@
     },
     data() {
       return {
-        superTableTreeProps: {
-          children: 'children',
-          label: 'name',
-        },
         superTableData: [
           {
             name: '',
@@ -40,6 +43,7 @@
             if (data.res) {
               this.superTableData[0].name = '超级表'
               this.superTableData[0].children = data.data
+              this.superTableData[0].icon = 'fa fa-sitemap'
             } else {
               this.$message({
                 message: data.msg,
