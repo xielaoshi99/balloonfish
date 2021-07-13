@@ -1,0 +1,174 @@
+<template>
+  <div>
+    <!-- 超级表筛选 -->
+    <el-dialog :close-on-click-modal="false" :before-close="cancelTableFilter" title="筛选条件" v-model="tableFilterDialog">
+      <el-form :model="tableFilter" label-width="80px">
+        <el-form-item label="数据项">
+          <el-checkbox-group v-model="tableFilter.fields">
+            <el-row class="checkboxGroup">
+              <el-col v-for="label in this.tableLabelItems" :key="label" :span="8">
+                <el-checkbox class="checkbox" :label="label">{{ label }}</el-checkbox>
+              </el-col>
+            </el-row>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="每页数目">
+          <el-radio-group v-model="eachPageTable">
+            <el-row class="checkboxGroup2">
+              <el-radio :label="10">10</el-radio>
+              <el-radio :label="15">15</el-radio>
+              <el-radio :label="20">20</el-radio>
+            </el-row>
+          </el-radio-group>
+        </el-form-item>
+        <el-switch class="switchStyle" v-model="surperTorder" active-value="ASC" inactive-value="DESC" active-text="时间正序" inactive-text="时间倒序"></el-switch>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="cancelTableFilter" size="small">取消</el-button>
+          <el-button @click="postTableFilter" size="small">设置</el-button>
+        </span>
+      </template>
+    </el-dialog>
+    <!-- 超级表数据 -->
+    <el-row class="surperTSearchRow">
+      <el-col :span="3" class="dataPackerLabel">时间范围:</el-col>
+      <el-col :span="13">
+        <div class="datePickerWrapper">
+          <el-date-picker
+            @change="getTableData(false, true)"
+            style="width: 100%"
+            size="small"
+            v-model="tableFilter.surperDateRange"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            align="right"
+          ></el-date-picker>
+        </div>
+      </el-col>
+      <el-col :span="4" class="freshDataBtn">
+        <el-button @click="openTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">筛选条件</el-button>
+      </el-col>
+      <el-col :span="4" class="freshDataBtn">
+        <el-button @click="getTableData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新</el-button>
+      </el-col>
+    </el-row>
+    <el-table size="mini" :data="tableData" border max-height="585" style="width: 100%">
+      <el-table-column fixed v-if="tableLabel[0]" :prop="tableLabel[0]" :label="tableLabel[0]" width="250"></el-table-column>
+      <el-table-column v-for="(data, index) in tableLabel.slice(1)" :key="index" :prop="data" :label="data" width="180"></el-table-column>
+    </el-table>
+    <!-- 超级表分页 -->
+    <div class="paginationWrapper">
+      <el-pagination :hide-on-single-page="true" :current-page="currentPageTable" @current-change="paginationChange" :page-size="eachPageTable" layout="prev, pager, next" :total="totalTable"></el-pagination>
+    </div>
+  </div>
+</template>
+
+<script>
+  import { selectData } from '../utils/taosrestful'
+  export default {
+    name: 'TableView',
+    props: {
+      tablename: String,
+      dbname: String,
+      link: Object,
+    },
+    data() {
+      return {
+        tableData: [],
+        tableLabel: [],
+        tableLabelItems: [],
+        tableFilter: {
+          fields: [],
+          surperDateRange: [],
+          surperTSearchText: '',
+          surperTSearchColumn: '',
+        },
+        surperTorder: 'DESC',
+        tableFilterDialog: false,
+        surperWhere: '',
+        //分页相关
+        eachPageTable: 10,
+        currentPageTable: 1,
+        totalTable: 0,
+      }
+    },
+    created() {
+      this.getTableData(true)
+    },
+    methods: {
+      openTableFilterD() {
+        this.tableFilterDialog = true
+        this.surperTableFilterCopy = JSON.parse(JSON.stringify(this.tableFilter))
+      },
+      cancelTableFilter() {
+        this.$message({
+          message: '取消操作',
+          type: 'warning',
+          duration: 1000,
+        })
+        this.tableFilterDialog = false
+        this.tableFilter = this.surperTableFilterCopy
+      },
+      paginationChange(page) {
+        this.currentPageTable = page
+        this.getTableData(false)
+      },
+      postTableFilter() {
+        this.tableFilterDialog = false
+        this.getTableData(false, true)
+      },
+      getTableData(isFirst, isResetPage) {
+        //处理时间范围
+        let startTime = null
+        let endTime = null
+        if (this.tableFilter.surperDateRange) {
+          startTime = this.tableFilter.surperDateRange[0]
+          endTime = this.tableFilter.surperDateRange[1]
+        }
+        //是否需要重置分页
+        if (isResetPage) {
+          this.currentPageTable = 1
+        }
+        let offsetVal = (this.currentPageTable - 1) * this.eachPageTable
+        if (this.tablename) {
+          selectData(this.tablename, this.dbname, this.link, this.tableFilter.fields, this.surperWhere, this.eachPageTable, offsetVal, this.surperTorder, startTime, endTime).then((data) => {
+            if (data.res) {
+              //成功
+              if (data.data.length != 0) {
+                //有数据
+                if (isFirst) {
+                  this.tableLabelItems = Object.keys(data.data[0])
+                  this.$message({
+                    message: '获取成功',
+                    type: 'success',
+                    duration: 1000,
+                  })
+                }
+                this.tableLabel = Object.keys(data.data[0])
+                this.tableFilter.fields = Object.keys(data.data[0])
+                this.tableData = data.data
+                this.totalTable = data.count
+              } else {
+                this.$message({
+                  message: '无数据',
+                  type: 'warning',
+                  duration: 1000,
+                })
+              }
+            } else {
+              this.$message({
+                message: data.msg,
+                type: 'error',
+                duration: 1000,
+              })
+            }
+          })
+        }
+      },
+    },
+  }
+</script>

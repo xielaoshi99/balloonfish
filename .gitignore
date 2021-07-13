@@ -4,3 +4,7 @@ dist
 dist-ssr
 *.local
 .vscode
+
+tmp
+**/.tmp
+release
