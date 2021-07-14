@@ -38,7 +38,7 @@
   </div>
   <el-dialog v-model="dBDialog" :title="dBDialogTitle" @close="closeDBDialog">
     <el-form label-width="150px" size="small">
-      <el-form-item label="名称" :rules="[{ required: true, message: '名称不能为空' }]">
+      <el-form-item label="数据库名称" :rules="[{ required: true, message: '名称不能为空' }]">
         <el-input v-model="dBFrom.dBname" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="文件压缩度(comp)">
