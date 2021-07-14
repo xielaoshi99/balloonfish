@@ -331,15 +331,17 @@
         console.log(this.theLink)
         if (type != 'db') {
           if (column.children) {
-            return false
+            this.rightPanelType = 'root' + type
+          } else {
+            this.rightPanelType = type
           }
         } else {
+          this.rightPanelType = type
           this.rightPanelDB = JSON.parse(JSON.stringify(row))
         }
         this.menuVisible = false // 先把模态框关死，目的是 第二次或者第n次右键鼠标的时候 它默认的是true
         this.menuVisible = true // 显示模态窗口，跳出自定义菜单栏
         event.preventDefault() //关闭浏览器右键默认事件
-        this.rightPanelType = type
         var menu = document.querySelector('.menu1')
         this.styleMenu(menu)
       },

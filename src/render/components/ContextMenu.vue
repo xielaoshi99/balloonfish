@@ -18,18 +18,26 @@
       删除数据库
     </div>
     <!-- 表菜单部分 -->
-    <div class="contextmenu__item" @click="addTable(CurrentRow)" v-if="type == 'table'">
+    <div class="contextmenu__item" @click="addTable(CurrentRow)" v-if="type == 'table' || type == 'roottable'">
       <i class="fa fa-plus-circle"></i>
       添加表
+    </div>
+    <div class="contextmenu__item" @click="editTable(CurrentRow)" v-if="type == 'table'">
+      <i class="fa fa-edit"></i>
+      编辑表
     </div>
     <div class="contextmenu__item" @click="delTable(CurrentRow)" v-if="type == 'table'">
       <i class="fa fa-trash-o"></i>
       删除表
     </div>
     <!-- 超级表菜单部分 -->
-    <div class="contextmenu__item" @click="delTable(CurrentRow)" v-if="type == 'stable'">
+    <div class="contextmenu__item" @click="addSTable(CurrentRow)" v-if="type == 'rootstable' || type == 'stable'">
       <i class="fa fa-plus-circle"></i>
       添加超级表
+    </div>
+    <div class="contextmenu__item" @click="editTable(CurrentRow)" v-if="type == 'stable'">
+      <i class="fa fa-edit"></i>
+      编辑超级表
     </div>
     <div class="contextmenu__item" @click="delSTable(CurrentRow)" v-if="type == 'stable'">
       <i class="fa fa-trash-o"></i>
@@ -81,7 +89,7 @@
   </el-dialog>
 </template>
 <script>
-  import { createDatabase, dropDatabase, showSuperTables, showTables, dropTable } from '../utils/taosrestful'
+  import { createDatabase, dropDatabase } from '../utils/taosrestful'
   export default {
     name: 'ContextMenu',
     props: {
@@ -114,7 +122,6 @@
       editDb(dbInfo) {
         this.dBDialog = true
         this.dBDialogTitle = '编辑数据库'
-        // console.log(dBFrom)
         this.dBFrom = {
           dBname: dbInfo.name,
           dBcomp: dbInfo.comp,
@@ -124,7 +131,6 @@
           dBquorum: dbInfo.quorum,
           dBblocks: dbInfo.blocks,
         }
-        console.log(this.dBFrom)
       },
       delDb(dbInfo) {
         let payload = {
