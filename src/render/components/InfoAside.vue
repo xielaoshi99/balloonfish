@@ -36,5 +36,8 @@
         name: 0,
       }
     },
+    created: function () {
+      console.log(this.tabledata)
+    },
   }
 </script>

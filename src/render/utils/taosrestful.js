@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export async function sendRequest(sqlStr, payload) {
+export async function sendRequest(sqlStr, payload, tableDis) {
   try {
     let res = await axios.post(`http://${payload.ip}:${payload.port}/rest/sql`, sqlStr, {
       auth: {
@@ -15,7 +15,7 @@ export async function sendRequest(sqlStr, payload) {
       // console.log(res.data.head)
       let head = res.data.head
       let resData = res.data.data.map((item) => Object.fromEntries(head.map((a, b) => [a, item[b]])))
-      return { res: true, count: res.data.rows, data: resData }
+      return { res: true, count: res.data.rows, data: resData, describe: tableDis || [] }
     } else {
       return { res: false, msg: res.data.desc, code: res.data.code }
     }
@@ -186,7 +186,7 @@ export async function selectData(tableName, dbName, payload, fields = null, wher
   }
   //把总数数出来
   if (limit != null) {
-    return sendRequest(sqlStr, payload).then((res_1) => {
+    return sendRequest(sqlStr, payload, res.data).then((res_1) => {
       return countDataIn(tableName, dbName, primaryKey, payload, where).then((count) => {
         res_1.count = count
         return new Promise((resolve, reject) => {
@@ -195,8 +195,13 @@ export async function selectData(tableName, dbName, payload, fields = null, wher
       })
     })
   } else {
-    return sendRequest(sqlStr, payload)
+    return sendRequest(sqlStr, payload, res.data)
   }
+}
+export function getTableTag(tableName, dbName, payload, tag) {
+  let sqlStr = 'SELECT ' + tag.join(',') + ` FROM ${dbName}.${tableName}`
+  return sendRequest(sqlStr, payload)
+
 }
 export function countDataIn(tableName, dbName, primaryKey, payload, where = '', startTime = null, endTime = null) {
   where = timeWhere(primaryKey, where, startTime, endTime)

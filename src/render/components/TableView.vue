@@ -6,7 +6,7 @@
         <el-form-item label="数据项">
           <el-checkbox-group v-model="tableFilter.fields">
             <el-row class="checkboxGroup">
-              <el-col v-for="label in this.tableLabelItems" :key="label" :span="8">
+              <el-col v-for="label in tableLabelItems" :key="label" :span="8">
                 <el-checkbox class="checkbox" :label="label">{{ label }}</el-checkbox>
               </el-col>
             </el-row>
@@ -32,8 +32,8 @@
     </el-dialog>
     <!-- 超级表数据 -->
     <el-row class="surperTSearchRow">
-      <el-col :span="3" class="dataPackerLabel">时间范围:</el-col>
-      <el-col :span="13">
+      <el-col :span="2" class="dataPackerLabel">时间范围:</el-col>
+      <el-col :span="10">
         <div class="datePickerWrapper">
           <el-date-picker
             @change="getTableData(false, true)"
@@ -55,6 +55,23 @@
       <el-col :span="4" class="freshDataBtn">
         <el-button @click="getTableData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新</el-button>
       </el-col>
+      <el-col :span="4" class="freshDataBtn">
+        <el-button @click="getTableData(false, false)" size="small" style="width: 100%" icon="el-icon-info">表信息</el-button>
+      </el-col>
+    </el-row>
+    <el-row class="surperTSearchRow">
+      <el-col :span="2" class="dataPackerLabel">标签信息:</el-col>
+      <el-col :span="22">
+        <div class="card-panel" v-for="(item, index) in tableTags" :key="index">
+          <label class="card-panel-key">
+            <i class="el-icon-paperclip"></i>
+            {{ index }}
+          </label>
+          <div class="card-panel-value">
+            {{ item }}
+          </div>
+        </div>
+      </el-col>
     </el-row>
     <el-table size="mini" :data="tableData" border max-height="585" style="width: 100%">
       <el-table-column fixed v-if="tableLabel[0]" :prop="tableLabel[0]" :label="tableLabel[0]" width="250"></el-table-column>
@@ -68,7 +85,7 @@
 </template>
 
 <script>
-  import { selectData } from '../utils/taosrestful'
+  import { selectData, getTableTag } from '../utils/taosrestful'
   export default {
     name: 'TableView',
     props: {
@@ -81,6 +98,7 @@
         tableData: [],
         tableLabel: [],
         tableLabelItems: [],
+        tableTags: {},
         tableFilter: {
           fields: [],
           surperDateRange: [],
@@ -142,12 +160,26 @@
                 //有数据
                 if (isFirst) {
                   this.tableLabelItems = Object.keys(data.data[0])
+                  debugger
                   this.$message({
                     message: '获取成功',
                     type: 'success',
                     duration: 1000,
                   })
                 }
+                let tableDescribe = data.describe
+                let tableTagName = []
+                for (let i = 0; i < tableDescribe.length; i++) {
+                  if (tableDescribe[i].Note == 'TAG') {
+                    tableTagName.push(tableDescribe[i].Field)
+                  }
+                }
+                if (tableTagName.length != 0) {
+                  getTableTag(this.tablename, this.dbname, this.link, tableTagName).then((data) => {
+                    this.tableTags = data.data[0]
+                  })
+                }
+
                 this.tableLabel = Object.keys(data.data[0])
                 this.tableFilter.fields = Object.keys(data.data[0])
                 this.tableData = data.data
@@ -172,3 +204,31 @@
     },
   }
 </script>
+<style scoped>
+  .card-panel {
+    color: #fff;
+    text-align: center;
+    height: 29px;
+    display: inline-block;
+    font-size: 14px;
+    border: 1px solid #66b1ff;
+    border-radius: 3px;
+    margin-right: 10px;
+  }
+  .card-panel-key {
+    display: inline-block;
+    background: #66b1ff;
+    height: 29px;
+    line-height: 29px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .card-panel-value {
+    color: #606266;
+    display: inline-block;
+    height: 29px;
+    line-height: 29px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+</style>

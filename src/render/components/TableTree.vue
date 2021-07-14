@@ -55,7 +55,6 @@
         }
       },
       tableNodeClick(data) {
-        console.log(this.db)
         if (data.uid) {
           this.$emit('addTab', ' 表 ' + data.table_name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data.table_name, 'TableView')
         }

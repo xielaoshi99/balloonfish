@@ -87,6 +87,12 @@
       </span>
     </template>
   </el-dialog>
+  <el-dialog v-model="formDialogFirst" title="请选择创建表的方式">
+    <el-radio-group v-model="radio">
+      <el-radio :label="3">以超级表作为模板</el-radio>
+      <el-radio :label="6">直接创建</el-radio>
+    </el-radio-group>
+  </el-dialog>
 </template>
 <script>
   import { createDatabase, dropDatabase } from '../utils/taosrestful'
@@ -112,6 +118,7 @@
           dBquorum: '',
           dBblocks: '',
         },
+        formDialogFirst: false,
       }
     },
     methods: {
@@ -212,6 +219,9 @@
             }
           })
         }
+      },
+      addTable() {
+        this.formDialogFirst = true
       },
     },
   }
