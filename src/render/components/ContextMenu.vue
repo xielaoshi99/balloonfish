@@ -75,19 +75,21 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="closeDBDialog" size="medium">取 消</el-button>
-        <el-button type="primary" @click="postdB" size="medium">确 定</el-button>
+        <el-button type="primary" @click="postDB" size="medium">确 定</el-button>
       </span>
     </template>
   </el-dialog>
 </template>
 <script>
-  import { getVersion, showDatabases, createDatabase, dropDatabase, showSuperTables, showTables, dropTable } from '../utils/taosrestful'
+  import { createDatabase, dropDatabase, showSuperTables, showTables, dropTable } from '../utils/taosrestful'
   export default {
     name: 'ContextMenu',
     props: {
       menuVisible: Boolean,
       type: String,
       db: Object,
+      links: Array,
+      linkKey: Number,
     },
     data() {
       return {
@@ -124,6 +126,46 @@
         }
         console.log(this.dBFrom)
       },
+      delDb(dbInfo) {
+        let payload = {
+          ip: this.links[this.linkKey].host,
+          port: this.links[this.linkKey].port,
+          user: this.links[this.linkKey].user,
+          password: this.links[this.linkKey].password,
+        }
+        this.$confirm('此操作将永久删除数据库' + dbInfo.name + ', 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+          .then(() => {
+            dropDatabase(dbInfo.name, payload).then((data) => {
+              if (data.res) {
+                //成功
+                this.$message({
+                  message: '删除成功',
+                  type: 'success',
+                  duration: 1000,
+                })
+                this.$parent.freshDB(this.linkKey)
+              } else {
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 1000,
+                })
+              }
+              this.loadingLinks = false
+              this.freshDB(key)
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除',
+            })
+          })
+      },
       closeDBDialog() {
         this.dBDialog = false
         this.dBFrom = {
@@ -134,6 +176,35 @@
           dBupdate: false,
           dBquorum: '',
           dBblocks: '',
+        }
+      },
+      postDB() {
+        let payload = {
+          ip: this.links[this.linkKey].host,
+          port: this.links[this.linkKey].port,
+          user: this.links[this.linkKey].user,
+          password: this.links[this.linkKey].password,
+        }
+        if ((this.dBDialogTitle = '添加数据库')) {
+          createDatabase(this.dBFrom.dBname, payload, true, this.dBFrom.dBkeep, this.dBFrom.dBupdate, this.dBFrom.dBcomp, this.dBFrom.dBreplica, this.dBFrom.dBquorum, this.dBFrom.dBblocks).then((data) => {
+            if (data.res) {
+              //新增成功
+              this.$message({
+                message: '添加成功',
+                type: 'success',
+                duration: 1000,
+              })
+              this.$parent.freshDB(this.linkKey)
+              this.closeDBDialog()
+            } else {
+              //添加失败
+              this.$message({
+                message: data.msg,
+                type: 'error',
+                duration: 1000,
+              })
+            }
+          })
         }
       },
     },

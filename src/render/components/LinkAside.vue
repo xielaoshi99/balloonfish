@@ -27,7 +27,7 @@
     </template>
   </el-dialog>
   <!-- 右键菜单 -->
-  <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB"></ContextMenu>
+  <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB" :links="links" :linkKey="linkKey"></ContextMenu>
   <div v-loading="loadingLinks">
     <el-row>
       <el-button class="linkBtn" @click="addLinkDialog = true" size="small" type="primary" plain style="font-size: 14px">新建连接</el-button>
@@ -58,7 +58,7 @@
           :show-header="false"
           @row-contextmenu="
             (row, column, event) => {
-              rightClick(row, column, event, 'db')
+              rightClick(row, column, event, 'db', index)
             }
           "
         >
@@ -71,7 +71,7 @@
                 @tableChanged="tableChanged"
                 @node-contextmenu="
                   (event, nodedata, node) => {
-                    rightClick(node, nodedata, event, 'stable')
+                    rightClick(node, nodedata, event, 'stable', index)
                   }
                 "
               ></STableTree>
@@ -82,7 +82,7 @@
                 @tableChanged="tableChanged"
                 @node-contextmenu="
                   (event, nodedata, node) => {
-                    rightClick(node, nodedata, event, 'table')
+                    rightClick(node, nodedata, event, 'table', index)
                   }
                 "
               ></TableTree>
@@ -119,6 +119,7 @@
     data() {
       return {
         links: [],
+        linkKey: 0,
         theLink: {}, //当前连接
         loadingLinks: false,
         addLinkDialog: false,
@@ -288,8 +289,6 @@
       alartDB(link, dbName) {
         //切换数据库前先清空表
         this.dbInfo = this.makeDbInfo(link.dbs, dbName)
-        this.surperTables = []
-        this.tables = []
         //记录进入的数据库
         this.theLink = link
         this.theDB = dbName
@@ -325,7 +324,11 @@
       rowClass() {
         return 'dbCol'
       },
-      rightClick(row, column, event, type) {
+      rightClick(row, column, event, type, linkKey) {
+        this.linkKey = linkKey
+        //this.alartDB(link, row.name)
+        this.theLink = this.links[linkKey]
+        console.log(this.theLink)
         if (type != 'db') {
           if (column.children) {
             return false
