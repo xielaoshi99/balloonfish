@@ -5,7 +5,7 @@
   "author": "xielaoshi",
   "license": "MIT",
   "scripts": {
-    "dev": "npm run dev:all",
+    "start": "npm run dev:all",
     "dev:all": "concurrently -n=vue,ele -c=green,blue \"npm run dev:vue\" \"npm run dev:ele\"",
     "dev:vue": "vite",
     "dev:ele": "node -r ts-node/register script/build-main --env=development --watch",

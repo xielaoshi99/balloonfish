@@ -3,7 +3,7 @@
  */
 import "@src/common/patch";
 import { join } from "path";
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, shell } from "electron";
 import dotenv from "dotenv";
 
 dotenv.config({ path: join(__dirname, "../../.env") });
@@ -14,7 +14,7 @@ function createWin() {
   // 创建浏览器窗口
   win = new BrowserWindow({
     width: 1200,
-    height: 768,
+    height: 735,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
