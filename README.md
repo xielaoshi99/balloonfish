@@ -48,6 +48,10 @@ npm run build  //同时编译网页版和桌面版
 
 ## 运行截图
 
+![](https://gitee.com/xielaoshi99/balloonfish/raw/master/docimg/3.png)
+![](https://gitee.com/xielaoshi99/balloonfish/raw/master/docimg/2.png)
+![](https://gitee.com/xielaoshi99/balloonfish/raw/master/docimg/1.png)
+
 ## TODO List
 
 * 数据库编辑（如果官方支持）
