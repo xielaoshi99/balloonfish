@@ -1,7 +1,6 @@
 # balloonfish(河豚)
 
-![](https://gitee.com/xielaoshi99/balloonfish/raw/master/docimg/icon.png)
-
+![](https://www.hualigs.cn/image/60eff6950916d.jpg)
 一款基于electron+vue3+vite2.0的TDengine时序库可视化管理工具
 
 从2019年年底接触TDengine，就产生了为其开发一款可视化管理工具的想法，可惜要么工作忙要么发懒，一直没有着手去做，直到今年3月份看到了一个名为TDengineGUI的项目，深受启发，并打算使用vue3重构一版，然后就又碰上了公司里大项目、建党100周年活动等等..... 总之又鸽了几个月。现在终于写出个模样来了。
@@ -50,9 +49,10 @@ npm run build  //同时编译网页版和桌面版
 
 ## 运行截图
 
-![](https://gitee.com/xielaoshi99/balloonfish/raw/master/docimg/3.png)
-![](https://gitee.com/xielaoshi99/balloonfish/raw/master/docimg/2.png)
-![](https://gitee.com/xielaoshi99/balloonfish/raw/master/docimg/1.png)
+![](https://www.hualigs.cn/image/60eff5e0df554.jpg)
+![](https://www.hualigs.cn/image/60eff5e140e76.jpg)
+![](https://www.hualigs.cn/image/60eff5e15aa97.jpg)
+![](https://www.hualigs.cn/image/60eff67617c66.jpg)
 
 ## TODO List
 
