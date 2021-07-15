@@ -55,13 +55,11 @@
       <el-col :span="4" class="freshDataBtn">
         <el-button @click="getTableData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新</el-button>
       </el-col>
-      <el-col :span="4" class="freshDataBtn">
-        <el-button @click="getTableData(false, false)" size="small" style="width: 100%" icon="el-icon-info">表信息</el-button>
-      </el-col>
     </el-row>
     <el-row class="surperTSearchRow">
+      <el-col :span="5" class="dataPackerLabel">所属超级表：{{ table.stable_name }}</el-col>
       <el-col :span="2" class="dataPackerLabel">标签信息:</el-col>
-      <el-col :span="22">
+      <el-col :span="17">
         <div class="card-panel" v-for="(item, index) in tableTags" :key="index">
           <label class="card-panel-key">
             <i class="el-icon-paperclip"></i>
@@ -89,7 +87,7 @@
   export default {
     name: 'TableView',
     props: {
-      tablename: String,
+      table: Object,
       dbname: String,
       link: Object,
     },
@@ -152,15 +150,14 @@
           this.currentPageTable = 1
         }
         let offsetVal = (this.currentPageTable - 1) * this.eachPageTable
-        if (this.tablename) {
-          selectData(this.tablename, this.dbname, this.link, this.tableFilter.fields, this.surperWhere, this.eachPageTable, offsetVal, this.surperTorder, startTime, endTime).then((data) => {
+        if (this.table.table_name) {
+          selectData(this.table.table_name, this.dbname, this.link, this.tableFilter.fields, this.surperWhere, this.eachPageTable, offsetVal, this.surperTorder, startTime, endTime).then((data) => {
             if (data.res) {
               //成功
               if (data.data.length != 0) {
                 //有数据
                 if (isFirst) {
                   this.tableLabelItems = Object.keys(data.data[0])
-                  debugger
                   this.$message({
                     message: '获取成功',
                     type: 'success',
@@ -175,7 +172,7 @@
                   }
                 }
                 if (tableTagName.length != 0) {
-                  getTableTag(this.tablename, this.dbname, this.link, tableTagName).then((data) => {
+                  getTableTag(this.table.table_name, this.dbname, this.link, tableTagName).then((data) => {
                     this.tableTags = data.data[0]
                   })
                 }

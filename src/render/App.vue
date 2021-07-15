@@ -10,7 +10,7 @@
             <i :class="item.icon"></i>
             <span>{{ item.title }}</span>
           </template>
-          <component :is="item.content" :tablename="item.table" :dbname="selectedDB.name" :link="theLink" />
+          <component :is="item.content" :table="item.table" :dbname="selectedDB.name" :link="theLink" />
         </el-tab-pane>
       </el-tabs>
     </el-main>
@@ -64,7 +64,6 @@
     },
     methods: {
       tableChanged(table, type, db) {
-        console.log(table)
         this.selectedTable = table
         this.selectedDB = db
         this.selectedType = type

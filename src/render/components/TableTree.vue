@@ -56,7 +56,7 @@
       },
       tableNodeClick(data) {
         if (data.uid) {
-          this.$emit('addTab', ' 表 ' + data.table_name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data.table_name, 'TableView')
+          this.$emit('addTab', ' 表 ' + data.table_name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data, 'TableView')
         }
         this.$emit('tableChanged', data, 'table', this.db)
       },
