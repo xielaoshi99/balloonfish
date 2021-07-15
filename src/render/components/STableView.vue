@@ -98,7 +98,7 @@
       }
     },
     created() {
-      this.getSTableData(true)
+      this.getSTableData(true, true)
     },
     methods: {
       openSurperTableFilterD() {

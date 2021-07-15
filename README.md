@@ -1,3 +1,7 @@
-# balloonfish
+# balloonfish(河豚)
+
+![RUNOOB 图标](docimg\icon.png)
 
 一款基于electron+vue3+vite2.0的TDengine时序库可视化管理工具
+
+## 当前版本功能
