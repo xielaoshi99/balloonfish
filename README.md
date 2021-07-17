@@ -7,11 +7,11 @@
 
 ## 感谢
 
-首先感谢skye0207的TDengineGUI项目！本项目采用了其封装的工具类和数据分页展示的代码
+首先感谢skye0207的[TDengineGUI](https://github.com/skye0207/TDengineGUI)项目！本项目采用了其封装的工具类和数据分页展示的代码
 
-然后要感谢qishibo的AnotherRedisDesktopManager项目，为本项目提供了UI的思路
+然后要感谢qishibo的[AnotherRedisDesktopManager](https://github.com/qishibo/AnotherRedisDesktopManager)项目，为本项目提供了UI的思路
 
-最后要感谢caoxiemeihao的electron-vue-vite项目，可以方便的把vite打包到electron中
+最后要感谢caoxiemeihao的[electron-vue-vite](https://github.com/caoxiemeihao/electron-vue-vite)项目，可以方便的把vite打包到electron中
 
 ## how to run and build
 
