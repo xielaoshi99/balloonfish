@@ -1,18 +1,19 @@
 # balloonfish(河豚)
 
-<hr/>
-
 <div align="center">
 <img src="https://www.hualigs.cn/image/60eff6950916d.jpg"/>
 </div>
+<br/>
+<div align="center">
+🚀一款基于electron+vue3+vite2.0的TDengine时序库可视化管理工具🚀
+</div>
+<br/>
 
-> 一款基于electron+vue3+vite2.0的TDengine时序库可视化管理工具
-
-从2019年年底接触[TDengine](https://github.com/taosdata/TDengine)，就产生了为其开发一款可视化管理工具的想法，可惜要么工作忙要么发懒，一直没有着手去做，直到今年3月份看到了一个名为TDengineGUI的项目，深受启发，并打算使用vue3重构一版，然后就又碰上了公司里大项目、建党100周年活动等等..... 总之又鸽了几个月。现在终于写出个模样来了。
+从2019年年底接触[TDengine](https://github.com/taosdata/TDengine)，就产生了为其开发一款可视化管理工具的想法，可惜要么工作忙要么发懒，一直没有着手去做，直到今年3月份看到了一个名为[TDengineGUI](https://github.com/skye0207/TDengineGUI)的项目，深受启发，并打算使用vue3重构一版，然后就又碰上了公司里大项目、建党100周年活动等等..... 总之又鸽了几个月。现在终于写出个模样来了。
 
 ## 感谢
 
-首先感谢[@skye0207](https://github.com/skye0207)的[TDengineGUI](https://github.com/skye0207/TDengineGUI)项目！本项目采用了其封装的工具类和数据分页展示的代码
+首先感谢[@skye0207](https://github.com/skye0207)的[TDengineGUI](https://github.com/skye0207/TDengineGUI)项目！本项目的灵感来源就是他！并且采用了其封装的工具类和数据分页展示的代码
 
 然后要感谢[@qishibo](https://github.com/qishibo)的[AnotherRedisDesktopManager](https://github.com/qishibo/AnotherRedisDesktopManager)项目，为本项目提供了UI的思路
 
@@ -57,7 +58,7 @@ npm run build  //同时编译网页版和桌面版
 ![](https://www.hualigs.cn/image/60eff5e0df554.jpg)
 ![](https://www.hualigs.cn/image/60eff5e140e76.jpg)
 ![](https://www.hualigs.cn/image/60eff5e15aa97.jpg)
-![](https://www.hualigs.cn/image/60eff67617c66.jpg)
+![](https://www.hualigs.cn/image/60f2963363461.jpg)
 
 ## TODO List
 
