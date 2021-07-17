@@ -13,7 +13,7 @@
 
 ## 感谢
 
-首先感谢[@skye0207](https://github.com/skye0207)的[TDengineGUI](https://github.com/skye0207/TDengineGUI)项目！本项目的灵感来源就是他！并且采用了其封装的工具类和数据分页展示的代码
+首先感谢[@skye0207](https://github.com/skye0207)的[TDengineGUI](https://github.com/skye0207/TDengineGUI)项目！本项目的灵感来源！并且采用了其封装的工具类和数据分页展示的代码
 
 然后要感谢[@qishibo](https://github.com/qishibo)的[AnotherRedisDesktopManager](https://github.com/qishibo/AnotherRedisDesktopManager)项目，为本项目提供了UI的思路
 
