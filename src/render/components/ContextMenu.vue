@@ -35,7 +35,7 @@
       <i class="fa fa-plus-circle"></i>
       添加超级表
     </div>
-    <div class="contextmenu__item" @click="editTable(CurrentRow)" v-if="type == 'stable'">
+    <div class="contextmenu__item" @click="editSTable(CurrentRow)" v-if="type == 'stable'">
       <i class="fa fa-edit"></i>
       编辑超级表
     </div>
@@ -87,11 +87,20 @@
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-model="formDialogFirst" title="请选择创建表的方式">
+  <el-dialog v-model="tableFormDialogFirst" title="请选择创建表的方式">
     <el-radio-group v-model="radio">
       <el-radio :label="3">以超级表作为模板</el-radio>
       <el-radio :label="6">直接创建</el-radio>
     </el-radio-group>
+  </el-dialog>
+  <el-dialog v-model="stableFormDialogFirst" title="请输入超级表名">
+    <el-input v-model="stableFrom.stableName" autocomplete="off"></el-input>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="closeSTableDialog" size="medium">取 消</el-button>
+        <el-button type="primary" @click="editSTable(stableFrom.stableName)" size="medium">确 定</el-button>
+      </span>
+    </template>
   </el-dialog>
 </template>
 <script>
@@ -118,7 +127,12 @@
           dBquorum: '',
           dBblocks: '',
         },
-        formDialogFirst: false,
+        tableFormDialogFirst: false,
+        stableFormDialogFirst: false,
+        stableFrom: {
+          stableName: '',
+          schema: [],
+        },
       }
     },
     methods: {
@@ -221,7 +235,18 @@
         }
       },
       addTable() {
-        this.formDialogFirst = true
+        this.tableFormDialogFirst = true
+      },
+      addSTable() {
+        this.stableFormDialogFirst = true
+      },
+      editSTable(name) {
+        console.log(name)
+        this.stableFormDialogFirst = false
+      },
+      closeSTableDialog() {
+        this.stableFormDialogFirst = false
+        this.stableFrom.stableName = ''
       },
     },
   }
