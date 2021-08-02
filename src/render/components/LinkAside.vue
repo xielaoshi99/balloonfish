@@ -62,30 +62,32 @@
             }
           "
         >
-          <el-table-column type="expand" width="40">
+          <el-table-column type="expand" width="40" style="max-height: 300px">
             <template #default="props">
-              <STableTree
-                :db="props.row"
-                :link="link"
-                @addTab="addTab"
-                @tableChanged="tableChanged"
-                @node-contextmenu="
-                  (event, nodedata, node) => {
-                    rightClick(node, nodedata, event, 'stable', index)
-                  }
-                "
-              ></STableTree>
-              <TableTree
-                :db="props.row"
-                :link="link"
-                @addTab="addTab"
-                @tableChanged="tableChanged"
-                @node-contextmenu="
-                  (event, nodedata, node) => {
-                    rightClick(node, nodedata, event, 'table', index)
-                  }
-                "
-              ></TableTree>
+              <div>
+                <STableTree
+                  :db="props.row"
+                  :link="link"
+                  @addTab="addTab"
+                  @tableChanged="tableChanged"
+                  @node-contextmenu="
+                    (event, nodedata, node) => {
+                      rightClick(node, nodedata, event, 'stable', index)
+                    }
+                  "
+                ></STableTree>
+                <TableTree
+                  :db="props.row"
+                  :link="link"
+                  @addTab="addTab"
+                  @tableChanged="tableChanged"
+                  @node-contextmenu="
+                    (event, nodedata, node) => {
+                      rightClick(node, nodedata, event, 'table', index)
+                    }
+                  "
+                ></TableTree>
+              </div>
             </template>
           </el-table-column>
           <el-table-column>
@@ -401,5 +403,10 @@
   }
   .el-submenu__icon-arrow {
     right: 10px !important;
+  }
+  .el-tree-node__children {
+    max-height: 300px;
+    overflow-y: auto !important;
+    overflow-x: hidden;
   }
 </style>
