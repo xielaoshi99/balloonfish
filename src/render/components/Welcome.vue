@@ -59,7 +59,6 @@
     methods: {
       async getYiYan() {
         let res = await axios.get(`https://v1.hitokoto.cn/`)
-        console.log(res.data)
         this.yiYan = res.data.hitokoto
         this.yiYanAuthor = '——' + (res.data.from_who || '') + '《' + res.data.from + '》'
       },

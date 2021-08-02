@@ -265,7 +265,6 @@
             for (let i = 0; i < tableCollect.length; i++) {
               tableCollect[i].label = tableCollect[i].value = tableCollect[i].table_name
             }
-            console.log(tableCollect)
             this.tableOptions = tableCollect
             this.searchFormDialog = true
           }
