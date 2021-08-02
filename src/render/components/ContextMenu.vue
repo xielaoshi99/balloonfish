@@ -22,7 +22,7 @@
       <i class="fa fa-plus-circle"></i>
       添加表
     </div>
-    <div class="contextmenu__item" @click="addTable(CurrentRow)" v-if="type == 'table' || type == 'roottable'">
+    <div class="contextmenu__item" @click="searchTable(db)" v-if="type == 'table' || type == 'roottable'">
       <i class="fa fa-search"></i>
       搜索表
     </div>
@@ -91,13 +91,13 @@
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-model="tableFormDialogFirst" title="请选择创建表的方式">
+  <el-dialog v-model="tableFormDialog" title="请选择创建表的方式">
     <el-radio-group v-model="radio">
       <el-radio :label="3">以超级表作为模板</el-radio>
       <el-radio :label="6">直接创建</el-radio>
     </el-radio-group>
   </el-dialog>
-  <el-dialog v-model="stableFormDialogFirst" title="请输入超级表名">
+  <el-dialog v-model="stableFormDialog" title="请输入超级表名">
     <el-input v-model="stableFrom.stableName" autocomplete="off"></el-input>
     <template #footer>
       <span class="dialog-footer">
@@ -106,9 +106,14 @@
       </span>
     </template>
   </el-dialog>
+  <el-dialog v-model="searchFormDialog" title="搜索表" @close="closeSearchDialog" width="30%" :close-on-click-modal="false" top="30%">
+    <el-select-v2 v-model="searchingTableName" filterable :options="tableOptions" placeholder="请输入表名" size="mini" />
+    &nbsp;
+    <el-button type="primary" @click="getSearchedTable(searchingTableName)" size="mini">搜索</el-button>
+  </el-dialog>
 </template>
 <script>
-  import { createDatabase, dropDatabase } from '../utils/taosrestful'
+  import { createDatabase, dropDatabase, showTables } from '../utils/taosrestful'
   export default {
     name: 'ContextMenu',
     props: {
@@ -131,8 +136,11 @@
           dBquorum: '',
           dBblocks: '',
         },
-        tableFormDialogFirst: false,
-        stableFormDialogFirst: false,
+        tableFormDialog: false,
+        stableFormDialog: false,
+        searchFormDialog: false,
+        searchingTableName: '',
+        tableOptions: [],
         stableFrom: {
           stableName: '',
           schema: [],
@@ -239,18 +247,51 @@
         }
       },
       addTable() {
-        this.tableFormDialogFirst = true
+        this.tableFormDialog = true
       },
       addSTable() {
-        this.stableFormDialogFirst = true
+        this.stableFormDialog = true
+      },
+      searchTable(dbInfo) {
+        let payload = {
+          ip: this.links[this.linkKey].host,
+          port: this.links[this.linkKey].port,
+          user: this.links[this.linkKey].user,
+          password: this.links[this.linkKey].password,
+        }
+        showTables(dbInfo.name, payload).then((data) => {
+          if (data.res) {
+            let tableCollect = data.data
+            for (let i = 0; i < tableCollect.length; i++) {
+              tableCollect[i].label = tableCollect[i].value = tableCollect[i].table_name
+            }
+            console.log(tableCollect)
+            this.tableOptions = tableCollect
+            this.searchFormDialog = true
+          }
+        })
+      },
+      getSearchedTable(name) {
+        let data = {}
+        for (let i = 0; i < this.tableOptions.length; i++) {
+          if (name == this.tableOptions[i].table_name) {
+            data = this.tableOptions[i]
+            this.searchFormDialog = false
+            this.$emit('addTab', ' 表 ' + data.table_name + '@' + this.db.name + ' | ' + this.links[this.linkKey].host + ':' + this.links[this.linkKey].port, data, 'TableView')
+            break
+          }
+        }
       },
       editSTable(name) {
-        console.log(name)
-        this.stableFormDialogFirst = false
+        this.stableFormDialog = false
       },
       closeSTableDialog() {
-        this.stableFormDialogFirst = false
+        this.stableFormDialog = false
         this.stableFrom.stableName = ''
+      },
+      closeSearchDialog() {
+        this.searchFormDialog = false
+        this.searchingTableName = ''
       },
     },
   }

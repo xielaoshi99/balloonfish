@@ -27,7 +27,7 @@
     </template>
   </el-dialog>
   <!-- 右键菜单 -->
-  <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB" :links="links" :linkKey="linkKey"></ContextMenu>
+  <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB" :links="links" :linkKey="linkKey" @addTab="addTab"></ContextMenu>
   <div v-loading="loadingLinks">
     <el-row>
       <el-button class="linkBtn" @click="addLinkDialog = true" size="small" type="primary" plain style="font-size: 14px">新建连接</el-button>
@@ -330,11 +330,12 @@
         this.linkKey = linkKey
         //this.alartDB(link, row.name)
         this.theLink = this.links[linkKey]
-        console.log(this.theLink)
         if (type != 'db') {
           if (column.children) {
+            this.rightPanelDB = this.dbInfo
             this.rightPanelType = 'root' + type
           } else {
+            this.rightPanelDB = this.dbInfo
             this.rightPanelType = type
           }
         } else {

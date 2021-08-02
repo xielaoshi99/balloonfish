@@ -45,9 +45,13 @@
             if (data.res) {
               this.TableData[0].table_name = '表'
               this.tableList = data.data
-              this.TableData[0].children = this.tableList.slice(0, 10)
               this.lastNum = 10
-              this.TableData[0].children.push({ table_name: '...更多' })
+              if (data.data.length > 10) {
+                this.TableData[0].children = this.tableList.slice(0, 10)
+                this.TableData[0].children.push({ table_name: '更多...' })
+              } else {
+                this.TableData[0].children = this.tableList
+              }
               this.TableData[0].icon = 'fa fa-table'
             } else {
               this.$message({
@@ -63,11 +67,11 @@
         if (data.uid) {
           this.$emit('addTab', ' 表 ' + data.table_name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data, 'TableView')
         }
-        if (data.table_name == '...更多') {
+        if (data.table_name == '更多...') {
           this.TableData[0].children.pop()
           this.lastNum += 10
           this.TableData[0].children = this.tableList.slice(0, this.lastNum)
-          this.TableData[0].children.push({ table_name: '...更多' })
+          this.TableData[0].children.push({ table_name: '更多...' })
         }
         this.$emit('tableChanged', data, 'table', this.db)
       },
