@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "element-plus": "^1.0.2-beta.54",
+    "element-plus": "^1.0.2-beta.63",
     "font-awesome": "^4.7.0",
     "vue": "^3.1.2"
   },

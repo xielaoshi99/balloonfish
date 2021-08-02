@@ -22,6 +22,10 @@
       <i class="fa fa-plus-circle"></i>
       添加表
     </div>
+    <div class="contextmenu__item" @click="addTable(CurrentRow)" v-if="type == 'table' || type == 'roottable'">
+      <i class="fa fa-search"></i>
+      搜索表
+    </div>
     <div class="contextmenu__item" @click="editTable(CurrentRow)" v-if="type == 'table'">
       <i class="fa fa-edit"></i>
       编辑表

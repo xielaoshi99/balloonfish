@@ -24,9 +24,12 @@
             children: [],
           },
         ],
+        tableList: [],
+        lastNum: 10,
       }
     },
-    mounted: function () {
+    created() {},
+    mounted: function (e) {
       this.freshTables()
     },
     methods: {
@@ -40,9 +43,11 @@
         if (this.db.name) {
           showTables(this.db.name, payload).then((data) => {
             if (data.res) {
-              this.tables = data.data
               this.TableData[0].table_name = '表'
-              this.TableData[0].children = this.tables
+              this.tableList = data.data
+              this.TableData[0].children = this.tableList.slice(0, 10)
+              this.lastNum = 10
+              this.TableData[0].children.push({ table_name: '...更多' })
               this.TableData[0].icon = 'fa fa-table'
             } else {
               this.$message({
@@ -58,8 +63,21 @@
         if (data.uid) {
           this.$emit('addTab', ' 表 ' + data.table_name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data, 'TableView')
         }
+        if (data.table_name == '...更多') {
+          this.TableData[0].children.pop()
+          this.lastNum += 10
+          this.TableData[0].children = this.tableList.slice(0, this.lastNum)
+          this.TableData[0].children.push({ table_name: '...更多' })
+        }
         this.$emit('tableChanged', data, 'table', this.db)
       },
     },
   }
 </script>
+<style>
+  .el-tree-node__children {
+    max-height: 350px;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+  }
+</style>

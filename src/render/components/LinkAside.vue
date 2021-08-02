@@ -404,9 +404,4 @@
   .el-submenu__icon-arrow {
     right: 10px !important;
   }
-  .el-tree-node__children {
-    max-height: 300px;
-    overflow-y: auto !important;
-    overflow-x: hidden;
-  }
 </style>
