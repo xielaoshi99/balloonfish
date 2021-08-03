@@ -46,6 +46,7 @@
 .linksMenu {
   width: 250px !important;
   margin: 8px !important;
+  overflow: hidden;
 }
 .infoMenu {
   width: 250px !important;

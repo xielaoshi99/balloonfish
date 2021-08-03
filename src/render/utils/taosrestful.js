@@ -128,6 +128,17 @@ export function createSuperTables(dbName, payload, colArray, tagArray, superTabl
     return sendRequest(sql, payload)
   })
 }
+export function createTables(dbName, payload, colArray, tableName) {
+  let colStr = ''
+  for (let i = 0; i < colArray.length; i++) {
+    colStr += colArray[i].name + ' ' + colArray[i].type + ','
+  }
+  colStr = colStr.slice(0, colStr.length - 1)
+  let sql = `CREATE TABLE ${tableName} (${colStr})`
+  return sendRequest(`USE ${dbName}`, payload).then((a) => {
+    return sendRequest(sql, payload)
+  })
+}
 export function showTables(dbName, payload, like = null) {
   let likeStr = like ? ` LIKE '%${like}%'` : ''
   return sendRequest(`SHOW ${dbName}.TABLES ${likeStr}`, payload)

@@ -57,7 +57,7 @@
       </el-col>
     </el-row>
     <el-table size="mini" :data="surperTableData" border max-height="585" style="width: 100%">
-      <el-table-column fixed v-if="surperTableLabel[0]" :prop="surperTableLabel[0]" :label="surperTableLabel[0]" width="180"></el-table-column>
+      <el-table-column fixed v-if="surperTableLabel[0]" :prop="surperTableLabel[0]" :label="surperTableLabel[0]" width="200"></el-table-column>
       <el-table-column v-for="(data, index) in surperTableLabel.slice(1)" :key="index" :prop="data" :label="data" width="180" :render-header="renderHeader"></el-table-column>
     </el-table>
     <!-- 超级表分页 -->

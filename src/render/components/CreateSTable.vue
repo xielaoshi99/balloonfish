@@ -3,7 +3,7 @@
     <template #header>
       <div class="card-header">
         <i class="fa fa-database"></i>
-        <span>{{ ' 数据库：' + dbname }}</span>
+        <span>{{ ' 数据库：' + table.name }}</span>
       </div>
     </template>
     <el-button type="success" @click="saveColumnData()" size="mini">保存</el-button>
@@ -73,10 +73,6 @@
       }
     },
     created() {
-      console.log(dataTypeOption)
-      console.log(this.table)
-      console.log(this.dbname)
-      console.log(this.link)
       this.dataTypeO = dataTypeOption
     },
     methods: {
@@ -121,11 +117,17 @@
               user: this.link.user,
               password: this.link.password,
             }
-            createSuperTables(this.dbname, payload, this.columnData, this.TagData, value).then((data) => {
+            createSuperTables(this.table.name, payload, this.columnData, this.TagData, value).then((data) => {
               if (data.res == true) {
                 this.$message({
                   type: 'success',
                   message: '超级表' + value + '创建成功！',
+                })
+              } else {
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 1000,
                 })
               }
             })

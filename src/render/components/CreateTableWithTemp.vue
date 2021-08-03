@@ -80,6 +80,12 @@
                   type: 'success',
                   message: '表' + value + '创建成功！',
                 })
+              } else {
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 1000,
+                })
               }
             })
           })

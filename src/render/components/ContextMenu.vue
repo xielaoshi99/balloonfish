@@ -48,40 +48,40 @@
       删除超级表
     </div>
   </div>
-  <el-dialog v-model="dBDialog" :title="dBDialogTitle" @close="closeDBDialog">
+  <el-dialog v-model="dBDialog" :title="dBDialogTitle" @close="closeDBDialog" width="40%">
     <el-form label-width="150px" size="small">
       <el-form-item label="数据库名称" :rules="[{ required: true, message: '名称不能为空' }]">
         <el-input v-model="dBFrom.dBname" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="文件压缩度(comp)">
-        <el-select v-model="dBFrom.dBcomp" placeholder="请选择">
+        <el-select v-model="dBFrom.dBcomp" placeholder="请选择" style="width: 100%">
           <el-option label="0" value="0"></el-option>
           <el-option label="1" value="1"></el-option>
           <el-option label="2" value="2"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="数据库副本数(replica)">
-        <el-select v-model="dBFrom.dBreplica" placeholder="请选择">
+        <el-select v-model="dBFrom.dBreplica" placeholder="请选择" style="width: 100%">
           <el-option label="1" value="1"></el-option>
           <el-option label="2" value="2"></el-option>
           <el-option label="3" value="3"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="数据保留天数(keep)">
-        <el-input-number v-model="dBFrom.dBkeep" :max="365000" controls-position="right"></el-input-number>
+        <el-input-number v-model="dBFrom.dBkeep" :max="365000" controls-position="right" style="width: 100%"></el-input-number>
       </el-form-item>
       <el-form-item label="是否可更新">
         <el-switch class="dBswitchStyle" size="small" v-model="dBFrom.dBupdate"></el-switch>
       </el-form-item>
       <el-form-item label="写入确认数(quorum)">
-        <el-select v-model="dBFrom.dBquorum" placeholder="请选择">
+        <el-select v-model="dBFrom.dBquorum" placeholder="请选择" style="width: 100%">
           <el-option label="1" value="1"></el-option>
           <el-option label="2" value="2"></el-option>
           <el-option label="3" value="3"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="blocks">
-        <el-input-number v-model="dBFrom.dBblocks" :min="3" :max="1000" controls-position="right"></el-input-number>
+        <el-input-number v-model="dBFrom.dBblocks" :min="3" :max="1000" controls-position="right" style="width: 100%"></el-input-number>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -240,7 +240,6 @@
         if ((this.dBDialogTitle = '添加数据库')) {
           createDatabase(this.dBFrom.dBname, payload, true, this.dBFrom.dBkeep, this.dBFrom.dBupdate, this.dBFrom.dBcomp, this.dBFrom.dBreplica, this.dBFrom.dBquorum, this.dBFrom.dBblocks).then((data) => {
             if (data.res) {
-              //新增成功
               this.$message({
                 message: '添加成功',
                 type: 'success',
@@ -270,38 +269,55 @@
           if (data.res) {
             let stableCollect = data.data
             this.stableOptions = stableCollect
+          } else {
+            this.$message({
+              message: data.msg,
+              type: 'error',
+              duration: 1000,
+            })
           }
         })
       },
       realAddTable() {
-        let payload = {
-          ip: this.links[this.linkKey].host,
-          port: this.links[this.linkKey].port,
-          user: this.links[this.linkKey].user,
-          password: this.links[this.linkKey].password,
-        }
-        let stAndTagName = {
-          stname: this.templateStable,
-          tableTagName: [],
-        }
-        disTable(this.templateStable, this.db.name, payload).then((data) => {
-          if (data.res) {
-            let stableDescribe = data.data
-            for (let i = 0; i < stableDescribe.length; i++) {
-              if (stableDescribe[i].Note == 'TAG') {
-                stAndTagName.tableTagName.push({
-                  name: stableDescribe[i].Field,
-                  type: stableDescribe[i].Type,
-                })
-              }
-            }
-            this.tableFormDialog = false
-            this.$emit('addTab', '创建表-根据模板', stAndTagName, 'CreateTableWithTemp')
+        if (this.addTableMethod === 'stable') {
+          let payload = {
+            ip: this.links[this.linkKey].host,
+            port: this.links[this.linkKey].port,
+            user: this.links[this.linkKey].user,
+            password: this.links[this.linkKey].password,
           }
-        })
+          let stAndTagName = {
+            stname: this.templateStable,
+            tableTagName: [],
+          }
+          disTable(this.templateStable, this.db.name, payload).then((data) => {
+            if (data.res) {
+              let stableDescribe = data.data
+              for (let i = 0; i < stableDescribe.length; i++) {
+                if (stableDescribe[i].Note == 'TAG') {
+                  stAndTagName.tableTagName.push({
+                    name: stableDescribe[i].Field,
+                    type: stableDescribe[i].Type,
+                  })
+                }
+              }
+              this.tableFormDialog = false
+              this.$emit('addTab', ' 创建表-根据模板', stAndTagName, 'CreateTableWithTemp')
+            } else {
+              this.$message({
+                message: data.msg,
+                type: 'error',
+                duration: 1000,
+              })
+            }
+          })
+        } else {
+          this.tableFormDialog = false
+          this.$emit('addTab', ' 创建表-直接创建', this.db, 'CreateTable')
+        }
       },
       addSTable(db) {
-        this.$emit('addTab', '创建超级表', db, 'CreateSTable')
+        this.$emit('addTab', ' 创建超级表', db, 'CreateSTable')
       },
       searchTable(dbInfo) {
         let payload = {
@@ -318,6 +334,12 @@
             }
             this.tableOptions = tableCollect
             this.searchFormDialog = true
+          } else {
+            this.$message({
+              message: data.msg,
+              type: 'error',
+              duration: 1000,
+            })
           }
         })
       },
@@ -352,6 +374,12 @@
                   type: 'success',
                   message: '删除成功!',
                 })
+              } else {
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 1000,
+                })
               }
             })
           })
@@ -380,6 +408,12 @@
                 this.$message({
                   type: 'success',
                   message: '删除成功!',
+                })
+              } else {
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 1000,
                 })
               }
             })

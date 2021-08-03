@@ -71,9 +71,9 @@
         </div>
       </el-col>
     </el-row>
-    <el-table size="mini" :data="tableData" border max-height="585" style="width: 100%">
+    <el-table size="mini" :data="tableData" border max-height="400" style="width: 100%">
       <el-table-column fixed v-if="tableLabel[0]" :prop="tableLabel[0]" :label="tableLabel[0]" width="250"></el-table-column>
-      <el-table-column v-for="(data, index) in tableLabel.slice(1)" :key="index" :prop="data" :label="data" width="180"></el-table-column>
+      <el-table-column v-for="(data, index) in tableLabel.slice(1)" :key="index" :prop="data" :label="data"></el-table-column>
     </el-table>
     <!-- 超级表分页 -->
     <div class="paginationWrapper">

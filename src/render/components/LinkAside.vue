@@ -26,13 +26,15 @@
       </span>
     </template>
   </el-dialog>
+
+  <el-row>
+    <el-button class="linkBtn" @click="addLinkDialog = true" size="small" type="primary" plain style="font-size: 14px">新建连接</el-button>
+  </el-row>
+
   <!-- 右键菜单 -->
   <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB" :links="links" :linkKey="linkKey" @addTab="addTab" @tableChanged="tableChanged" :table="rightTable"></ContextMenu>
   <div v-loading="loadingLinks">
-    <el-row>
-      <el-button class="linkBtn" @click="addLinkDialog = true" size="small" type="primary" plain style="font-size: 14px">新建连接</el-button>
-    </el-row>
-    <el-menu @open="freshDB" :unique-opened="false">
+    <el-menu @open="freshDB" :unique-opened="false" class="menus">
       <el-submenu :index="String(index)" :key="index" v-for="(link, index) in links">
         <template #title>
           <span>{{ link.name }}</span>
@@ -189,7 +191,6 @@
               duration: 1000,
             })
           } else {
-            //连接失败
             this.$message({
               message: '连接失败',
               type: 'error',
@@ -207,10 +208,8 @@
           password: this.linkForm.password,
         }
         showDatabases(payload).then((data) => {
-          //处理返回的数据库数据
           if (data.res) {
             getVersion(payload).then((_data) => {
-              //连接成功，保存到本地
               AddALink({
                 name: this.linkForm.name || this.linkForm.host,
                 host: this.linkForm.host,
@@ -219,9 +218,7 @@
                 password: this.linkForm.password,
                 version: _data,
               })
-              //关闭新建连接的弹窗
               this.addLinkDialog = false
-              //清空表单
               this.linkForm = {
                 name: '',
                 host: '',
@@ -317,6 +314,8 @@
           icon = 'fa fa-table'
         } else if (type == 'QuerySQL') {
           icon = 'fa fa-terminal'
+        } else if (type == 'CreateSTable' || type == 'CreateTable') {
+          icon = 'fa fa-plus-circle'
         }
         this.$emit('addTab', newTabTitle, table, type, icon)
       },
@@ -379,6 +378,11 @@
   }
   .dbCol {
     padding: 3px !important;
+  }
+  .menus {
+    margin-top: 20px;
+    overflow: auto;
+    height: 600px;
   }
   .dbButtonGroup {
     font-size: 15px;
