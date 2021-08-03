@@ -8,7 +8,7 @@
     </template>
     <el-button type="success" @click="saveColumnData()" size="mini">保存</el-button>
     <el-button type="success" @click="AddColumnData()" size="mini">添加字段</el-button>
-    <el-table size="mini" :data="columnData" border height="400" style="width: 100%; margin-top: 10px" @row-click="editColumnData">
+    <el-table size="mini" :data="columnData" border height="400" style="width: 100%; margin-top: 10px" @cell-click="editColumnData">
       <el-table-column prop="name" label="字段名称">
         <template v-slot="scope">
           <span v-if="scope.row.isEdit">
@@ -80,7 +80,9 @@
     },
     methods: {
       AddColumnData() {
-        this.columnData[this.columnData.length - 1].isEdit = false
+        for (let i = 0; i < this.columnData.length; i++) {
+          this.columnData[i].isEdit = false
+        }
         this.columnData.push({
           name: '',
           type: '',
@@ -91,9 +93,14 @@
       delColumnData(index) {
         this.columnData.splice(index, 1)
       },
-      editColumnData(row, column, event) {
-        if (!row.isEdit) {
-          row.isEdit = true
+      editColumnData(row, column, cell, event) {
+        if (column.property != 'isTag' && column.label != '操作') {
+          for (let i = 0; i < this.columnData.length; i++) {
+            this.columnData[i].isEdit = false
+          }
+          if (!row.isEdit) {
+            row.isEdit = true
+          }
         }
       },
       saveColumnData() {
