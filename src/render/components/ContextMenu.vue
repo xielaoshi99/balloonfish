@@ -97,12 +97,12 @@
       <el-radio :label="6">直接创建</el-radio>
     </el-radio-group>
   </el-dialog>
-  <el-dialog v-model="stableFormDialog" title="请输入超级表名">
+  <el-dialog v-model="stableFormDialog" title="请输入超级表名" @close="closeSTableDialog">
     <el-input v-model="stableFrom.stableName" autocomplete="off"></el-input>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="closeSTableDialog" size="medium">取 消</el-button>
-        <el-button type="primary" @click="editSTable(stableFrom.stableName)" size="medium">确 定</el-button>
+        <el-button type="primary" @click="createSTable(stableFrom.stableName)" size="medium">确 定</el-button>
       </span>
     </template>
   </el-dialog>
@@ -281,7 +281,11 @@
           }
         }
       },
-      editSTable(name) {
+      editSTable(row) {
+        this.stableFormDialog = false
+      },
+      createSTable(name) {
+        console.log(name)
         this.stableFormDialog = false
       },
       closeSTableDialog() {
