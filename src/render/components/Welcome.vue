@@ -22,7 +22,7 @@
           </template>
           <div class="softInfo">
             <img src="../assets/icon.png" width="200" />
-            <p>BalloonFish（河豚）版本：1.0</p>
+            <p>BalloonFish（河豚）版本：0.5.7-dev</p>
             <p>一款基于electron+vue3+vite2.0的TDengine时序库可视化管理工具</p>
             <p>By xielaoshi</p>
             <el-button type="text" @click="viewLib">查看组件版本</el-button>
@@ -50,6 +50,7 @@
         yiYan: '',
         date: '',
         time: '',
+        yiYanAuthor: '',
       }
     },
     created() {

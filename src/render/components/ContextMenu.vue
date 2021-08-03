@@ -127,6 +127,7 @@
       linkKey: Number,
       table: Object,
     },
+    emits: ['addTab', 'tableChanged'],
     data() {
       return {
         dBDialog: false,
@@ -138,7 +139,7 @@
           dBkeep: 0,
           dBupdate: false,
           dBquorum: '',
-          dBblocks: '',
+          dBblocks: 0,
         },
         tableFormDialog: false,
         searchFormDialog: false,
@@ -175,7 +176,7 @@
           dBkeep: parseInt(dbInfo['keep0,keep1,keep(D)'].split(',')[0]),
           dBupdate: dbInfo.update,
           dBquorum: dbInfo.quorum,
-          dBblocks: dbInfo.blocks,
+          dBblocks: parseInt(dbInfo.blocks),
         }
       },
       delDb(dbInfo) {
@@ -224,10 +225,10 @@
           dBname: '',
           dBcomp: '',
           dBreplica: '',
-          dBkeep: '',
+          dBkeep: 0,
           dBupdate: false,
           dBquorum: '',
-          dBblocks: '',
+          dBblocks: 0,
         }
       },
       postDB() {
