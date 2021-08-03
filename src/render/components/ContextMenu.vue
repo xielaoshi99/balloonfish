@@ -35,7 +35,7 @@
       删除表
     </div>
     <!-- 超级表菜单部分 -->
-    <div class="contextmenu__item" @click="addSTable(CurrentRow)" v-if="type == 'rootstable' || type == 'stable'">
+    <div class="contextmenu__item" @click="addSTable(db)" v-if="type == 'rootstable' || type == 'stable'">
       <i class="fa fa-plus-circle"></i>
       添加超级表
     </div>
@@ -249,8 +249,10 @@
       addTable() {
         this.tableFormDialog = true
       },
-      addSTable() {
-        this.stableFormDialog = true
+      addSTable(db) {
+        // console.log(db)
+        this.$emit('addTab', '创建超级表', db, 'CreateSTable')
+        // this.stableFormDialog = true
       },
       searchTable(dbInfo) {
         let payload = {

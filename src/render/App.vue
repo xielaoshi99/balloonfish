@@ -23,6 +23,7 @@
 <script>
   import STableView from './components/STableView.vue'
   import TableView from './components/TableView.vue'
+  import CreateSTable from './components/CreateSTable.vue'
   import LinkAside from './components/LinkAside.vue'
   import InfoAside from './components/InfoAside.vue'
   import Welcome from './components/Welcome.vue'
@@ -31,6 +32,7 @@
     components: {
       STableView,
       TableView,
+      CreateSTable,
       LinkAside,
       InfoAside,
       Welcome,
