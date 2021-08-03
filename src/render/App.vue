@@ -26,6 +26,7 @@
   import CreateSTable from './components/CreateSTable.vue'
   import CreateTable from './components/CreateTable.vue'
   import CreateTableWithTemp from './components/CreateTableWithTemp.vue'
+  import QuerySQL from './components/QuerySQL.vue'
   import LinkAside from './components/LinkAside.vue'
   import InfoAside from './components/InfoAside.vue'
   import Welcome from './components/Welcome.vue'
@@ -37,6 +38,7 @@
       CreateSTable,
       CreateTable,
       CreateTableWithTemp,
+      QuerySQL,
       LinkAside,
       InfoAside,
       Welcome,
@@ -113,4 +115,8 @@
     },
   }
 </script>
-<style></style>
+<style>
+  .el-tabs__nav .el-tabs__item:nth-child(1) .el-icon-close {
+    display: none;
+  }
+</style>

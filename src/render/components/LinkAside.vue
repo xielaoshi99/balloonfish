@@ -315,6 +315,8 @@
           icon = 'fa fa-sitemap'
         } else if (type == 'TableView') {
           icon = 'fa fa-table'
+        } else if (type == 'QuerySQL') {
+          icon = 'fa fa-terminal'
         }
         this.$emit('addTab', newTabTitle, table, type, icon)
       },

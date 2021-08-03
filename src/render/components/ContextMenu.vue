@@ -333,8 +333,37 @@
         }
       },
       editSTable(row) {},
+      delSTable() {
+        this.$confirm('此操作将永久删除超级表' + this.table.name + '，所属表及所有数据也将会一并删除！是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+          .then(() => {
+            let payload = {
+              ip: this.links[this.linkKey].host,
+              port: this.links[this.linkKey].port,
+              user: this.links[this.linkKey].user,
+              password: this.links[this.linkKey].password,
+            }
+            dropTable(this.table.name, this.db.name, payload).then((data) => {
+              if (data.res) {
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!',
+                })
+              }
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除',
+            })
+          })
+      },
       delTable() {
-        this.$confirm('此操作将永久表' + this.table.table_name + '及其所有数据, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除表' + this.table.table_name + '及其所有数据, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning',
@@ -370,6 +399,10 @@
         this.tableFormDialog = false
         this.templateStable = ''
         this.addTableMethod = 'stable'
+      },
+      runSQL(dbInfo) {
+        console.log(dbInfo)
+        this.$emit('addTab', ' 自定义SQL@' + dbInfo.name, dbInfo, 'QuerySQL')
       },
     },
   }
