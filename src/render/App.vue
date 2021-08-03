@@ -24,6 +24,8 @@
   import STableView from './components/STableView.vue'
   import TableView from './components/TableView.vue'
   import CreateSTable from './components/CreateSTable.vue'
+  import CreateTable from './components/CreateTable.vue'
+  import CreateTableWithTemp from './components/CreateTableWithTemp.vue'
   import LinkAside from './components/LinkAside.vue'
   import InfoAside from './components/InfoAside.vue'
   import Welcome from './components/Welcome.vue'
@@ -33,6 +35,8 @@
       STableView,
       TableView,
       CreateSTable,
+      CreateTable,
+      CreateTableWithTemp,
       LinkAside,
       InfoAside,
       Welcome,

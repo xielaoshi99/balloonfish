@@ -124,8 +124,9 @@ export function createSuperTables(dbName, payload, colArray, tagArray, superTabl
   tagStr = tagStr.slice(0, tagStr.length - 1)
   var sql = `CREATE STABLE ${superTableName} (${colStr}) TAGS (${tagStr})`
   console.log(sql)
-  sendRequest(`USE ${dbName}`, payload)
-  return sendRequest(sql, payload)
+  return sendRequest(`USE ${dbName}`, payload).then((a) => {
+    return sendRequest(sql, payload)
+  })
 }
 export function showTables(dbName, payload, like = null) {
   let likeStr = like ? ` LIKE '%${like}%'` : ''
@@ -219,7 +220,6 @@ export async function selectData(tableName, dbName, payload, fields = null, wher
 export function getTableTag(tableName, dbName, payload, tag) {
   let sqlStr = 'SELECT ' + tag.join(',') + ` FROM ${dbName}.${tableName}`
   return sendRequest(sqlStr, payload)
-
 }
 export function countDataIn(tableName, dbName, primaryKey, payload, where = '', startTime = null, endTime = null) {
   where = timeWhere(primaryKey, where, startTime, endTime)

@@ -18,7 +18,7 @@
       删除数据库
     </div>
     <!-- 表菜单部分 -->
-    <div class="contextmenu__item" @click="addTable()" v-if="type == 'table' || type == 'roottable'">
+    <div class="contextmenu__item" @click="addTable(db)" v-if="type == 'table' || type == 'roottable'">
       <i class="fa fa-plus-circle"></i>
       添加表
     </div>
@@ -95,8 +95,8 @@
     <el-radio-group v-model="addTableMethod">
       <p>
         <el-radio label="stable">以超级表作为模板</el-radio>
-        <el-select v-model="templateStable" placeholder="请选择超级表" size="mini" style="width: 50%">
-          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        <el-select v-model="templateStable" placeholder="请选择超级表" size="mini" style="width: 50%" :disabled="stableSelectDisabled">
+          <el-option v-for="item in stableOptions" :key="item.name" :label="item.name" :value="item.name"></el-option>
         </el-select>
       </p>
       <p style="margin-top: 15px">
@@ -116,7 +116,7 @@
   </el-dialog>
 </template>
 <script>
-  import { createDatabase, dropDatabase, showTables, showSuperTables } from '../utils/taosrestful'
+  import { createDatabase, dropDatabase, showTables, showSuperTables, disTable } from '../utils/taosrestful'
   export default {
     name: 'ContextMenu',
     props: {
@@ -143,8 +143,22 @@
         searchFormDialog: false,
         searchingTableName: '',
         tableOptions: [],
+        stableOptions: [],
         addTableMethod: 'stable',
+        stableSelectDisabled: false,
+        templateStable: '',
       }
+    },
+    watch: {
+      addTableMethod(val, oldVal) {
+        console.log(val)
+        if (val == 'table') {
+          this.stableSelectDisabled = true
+          this.templateStable = ''
+        } else {
+          this.stableSelectDisabled = false
+        }
+      },
     },
     methods: {
       addDB() {
@@ -235,7 +249,6 @@
               this.$parent.freshDB(this.linkKey)
               this.closeDBDialog()
             } else {
-              //添加失败
               this.$message({
                 message: data.msg,
                 type: 'error',
@@ -245,19 +258,42 @@
           })
         }
       },
-      addTable() {
+      addTable(dbInfo) {
         this.tableFormDialog = true
+        let payload = {
+          ip: this.links[this.linkKey].host,
+          port: this.links[this.linkKey].port,
+          user: this.links[this.linkKey].user,
+          password: this.links[this.linkKey].password,
+        }
+        showSuperTables(dbInfo.name, payload).then((data) => {
+          if (data.res) {
+            let stableCollect = data.data
+            this.stableOptions = stableCollect
+          }
+        })
       },
       realAddTable() {
-        alert(this.addTableMethod)
-        showTables(dbInfo.name, payload).then((data) => {
+        let payload = {
+          ip: this.links[this.linkKey].host,
+          port: this.links[this.linkKey].port,
+          user: this.links[this.linkKey].user,
+          password: this.links[this.linkKey].password,
+        }
+        let stAndTagName = {
+          stname: this.templateStable,
+          tableTagName: [],
+        }
+        disTable(this.templateStable, this.db.name, payload).then((data) => {
           if (data.res) {
-            let tableCollect = data.data
-            for (let i = 0; i < tableCollect.length; i++) {
-              tableCollect[i].label = tableCollect[i].value = tableCollect[i].table_name
+            let stableDescribe = data.data
+            for (let i = 0; i < stableDescribe.length; i++) {
+              if (stableDescribe[i].Note == 'TAG') {
+                stAndTagName.tableTagName.push(stableDescribe[i].Field)
+              }
             }
-            this.tableOptions = tableCollect
-            this.searchFormDialog = true
+            this.tableFormDialog = false
+            this.$emit('addTab', '创建表-根据模板', stAndTagName, 'CreateTableWithTemp')
           }
         })
       },
