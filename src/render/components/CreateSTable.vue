@@ -50,6 +50,7 @@
 </template>
 <script>
   import { dataTypeOption } from '../utils/options'
+  import { createSuperTables } from '../utils/taosrestful'
   export default {
     name: 'CreateSTable',
     props: {
@@ -108,15 +109,25 @@
           this.$prompt('请输入表名', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
-            inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-            inputErrorMessage: '表名格式不正确',
+            // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+            // inputErrorMessage: '表名格式不正确',
           }).then(({ value }) => {
             for (let i = 0; i < this.columnData.length; i++) {
               this.columnData[i].isEdit = false
             }
-            this.$message({
-              type: 'success',
-              message: '你的表名是: ' + value,
+            let payload = {
+              ip: this.link.ip,
+              port: this.link.port,
+              user: this.link.user,
+              password: this.link.password,
+            }
+            createSuperTables(this.dbname, payload, this.columnData, this.TagData, value).then((data) => {
+              if (data.res == true) {
+                this.$message({
+                  type: 'success',
+                  message: '超级表' + value + '创建成功！',
+                })
+              }
             })
           })
         }

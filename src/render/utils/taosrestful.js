@@ -109,6 +109,24 @@ export function showSuperTables(dbName, payload, like = null) {
   let likeStr = like ? ` LIKE '%${like}%'` : ''
   return sendRequest(`SHOW ${dbName}.STABLES  ${likeStr}`, payload)
 }
+export function createSuperTables(dbName, payload, colArray, tagArray, superTableName) {
+  var colStr = ''
+  var tagStr = ''
+  for (let i = 0; i < colArray.length; i++) {
+    if (!colArray[i].isTag) {
+      colStr += colArray[i].name + ' ' + colArray[i].type + ','
+    }
+  }
+  for (let i = 0; i < tagArray.length; i++) {
+    tagStr += tagArray[i].name + ' ' + tagArray[i].type + ','
+  }
+  colStr = colStr.slice(0, colStr.length - 1)
+  tagStr = tagStr.slice(0, tagStr.length - 1)
+  var sql = `CREATE STABLE ${superTableName} (${colStr}) TAGS (${tagStr})`
+  console.log(sql)
+  sendRequest(`USE ${dbName}`, payload)
+  return sendRequest(sql, payload)
+}
 export function showTables(dbName, payload, like = null) {
   let likeStr = like ? ` LIKE '%${like}%'` : ''
   return sendRequest(`SHOW ${dbName}.TABLES  ${likeStr}`, payload)
