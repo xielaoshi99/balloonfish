@@ -53,5 +53,6 @@
 <style>
   .CodeMirror {
     margin-top: 10px;
+    height: 200px;
   }
 </style>
