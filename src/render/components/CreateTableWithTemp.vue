@@ -11,6 +11,7 @@
     <el-button type="success" @click="saveColumnData()" size="mini">保存</el-button>
     <el-table size="mini" :data="columnData" border height="400" style="width: 100%; margin-top: 10px" @cell-click="editColumnData">
       <el-table-column prop="tagName" label="TAG名称"></el-table-column>
+      <el-table-column prop="tagType" label="TAG类型"></el-table-column>
       <el-table-column prop="tagValue" label="TAG值">
         <template v-slot="scope">
           <span v-if="scope.row.isEdit">
@@ -23,6 +24,7 @@
   </el-card>
 </template>
 <script>
+  import { createTablesWithTemp } from '../utils/taosrestful'
   export default {
     name: 'CreateTableWithTemp',
     props: {
@@ -36,9 +38,11 @@
       }
     },
     created() {
+      console.log(this.table.tableTagName)
       for (let i = 0; i < this.table.tableTagName.length; i++) {
         this.columnData.push({
-          tagName: this.table.tableTagName[i],
+          tagName: this.table.tableTagName[i].name,
+          tagType: this.table.tableTagName[i].type,
           tagValue: '',
         })
       }
@@ -60,9 +64,23 @@
             // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
             // inputErrorMessage: '表名格式不正确',
           }).then(({ value }) => {
-            this.$message({
-              type: 'success',
-              message: '你的表名是: ' + value,
+            for (let i = 0; i < this.columnData.length; i++) {
+              this.columnData[i].isEdit = false
+            }
+            let payload = {
+              ip: this.link.ip,
+              port: this.link.port,
+              user: this.link.user,
+              password: this.link.password,
+            }
+            createTablesWithTemp(this.dbname, payload, this.columnData, value, this.table.stname).then((data) => {
+              console.log(data)
+              if (data.res == true) {
+                this.$message({
+                  type: 'success',
+                  message: '表' + value + '创建成功！',
+                })
+              }
             })
           })
         }

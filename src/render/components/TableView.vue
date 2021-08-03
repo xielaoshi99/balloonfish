@@ -153,7 +153,19 @@
         if (this.table.table_name) {
           selectData(this.table.table_name, this.dbname, this.link, this.tableFilter.fields, this.surperWhere, this.eachPageTable, offsetVal, this.surperTorder, startTime, endTime).then((data) => {
             if (data.res) {
-              //成功
+              let tableDescribe = data.describe
+              let tableTagName = []
+              for (let i = 0; i < tableDescribe.length; i++) {
+                if (tableDescribe[i].Note == 'TAG') {
+                  tableTagName.push(tableDescribe[i].Field)
+                }
+              }
+              console.log(tableTagName)
+              if (tableTagName.length != 0) {
+                getTableTag(this.table.table_name, this.dbname, this.link, tableTagName).then((data) => {
+                  this.tableTags = data.data[0]
+                })
+              }
               if (data.data.length != 0) {
                 //有数据
                 if (isFirst) {
@@ -164,19 +176,6 @@
                     duration: 1000,
                   })
                 }
-                let tableDescribe = data.describe
-                let tableTagName = []
-                for (let i = 0; i < tableDescribe.length; i++) {
-                  if (tableDescribe[i].Note == 'TAG') {
-                    tableTagName.push(tableDescribe[i].Field)
-                  }
-                }
-                if (tableTagName.length != 0) {
-                  getTableTag(this.table.table_name, this.dbname, this.link, tableTagName).then((data) => {
-                    this.tableTags = data.data[0]
-                  })
-                }
-
                 this.tableLabel = Object.keys(data.data[0])
                 this.tableFilter.fields = Object.keys(data.data[0])
                 this.tableData = data.data

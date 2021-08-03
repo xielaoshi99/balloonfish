@@ -110,8 +110,8 @@ export function showSuperTables(dbName, payload, like = null) {
   return sendRequest(`SHOW ${dbName}.STABLES  ${likeStr}`, payload)
 }
 export function createSuperTables(dbName, payload, colArray, tagArray, superTableName) {
-  var colStr = ''
-  var tagStr = ''
+  let colStr = ''
+  let tagStr = ''
   for (let i = 0; i < colArray.length; i++) {
     if (!colArray[i].isTag) {
       colStr += colArray[i].name + ' ' + colArray[i].type + ','
@@ -122,7 +122,7 @@ export function createSuperTables(dbName, payload, colArray, tagArray, superTabl
   }
   colStr = colStr.slice(0, colStr.length - 1)
   tagStr = tagStr.slice(0, tagStr.length - 1)
-  var sql = `CREATE STABLE ${superTableName} (${colStr}) TAGS (${tagStr})`
+  let sql = `CREATE STABLE ${superTableName} (${colStr}) TAGS (${tagStr})`
   console.log(sql)
   return sendRequest(`USE ${dbName}`, payload).then((a) => {
     return sendRequest(sql, payload)
@@ -130,7 +130,19 @@ export function createSuperTables(dbName, payload, colArray, tagArray, superTabl
 }
 export function showTables(dbName, payload, like = null) {
   let likeStr = like ? ` LIKE '%${like}%'` : ''
-  return sendRequest(`SHOW ${dbName}.TABLES  ${likeStr}`, payload)
+  return sendRequest(`SHOW ${dbName}.TABLES ${likeStr}`, payload)
+}
+export function createTablesWithTemp(dbName, payload, tagArray, tableName, superTableName) {
+  let tagStr = ''
+  for (let i = 0; i < tagArray.length; i++) {
+    tagStr += "'" + tagArray[i].tagValue + "',"
+  }
+  tagStr = tagStr.slice(0, tagStr.length - 1)
+  let sql = `CREATE TABLE ${tableName} USING ${superTableName} TAGS (${tagStr});`
+  console.log(sql)
+  return sendRequest(`USE ${dbName}`, payload).then((a) => {
+    return sendRequest(sql, payload)
+  })
 }
 export function disTable(tableName, dbName, payload) {
   return sendRequest(`DESCRIBE ${dbName}.${tableName}`, payload)
@@ -146,7 +158,6 @@ export function insertData(tableName, data, dbName = null) {
     fields += key + ','
     values += value + ','
   }
-  // console.log(`INSERT INTO ${dbN}.${tableName} (${fields.slice(0,-1)}) VALUES (${values.slice(0,-1)})` )
   return sendRequest(`INSERT INTO ${dbN}.${tableName} (${fields.slice(0, -1)}) VALUES (${values.slice(0, -1)})`)
 }
 export function timeWhere(primaryKey, where, startTime, endTime) {

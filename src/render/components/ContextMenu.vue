@@ -116,7 +116,7 @@
   </el-dialog>
 </template>
 <script>
-  import { createDatabase, dropDatabase, showTables, showSuperTables, disTable } from '../utils/taosrestful'
+  import { createDatabase, dropDatabase, showTables, showSuperTables, disTable, dropTable } from '../utils/taosrestful'
   export default {
     name: 'ContextMenu',
     props: {
@@ -125,6 +125,7 @@
       db: Object,
       links: Array,
       linkKey: Number,
+      table: Object,
     },
     data() {
       return {
@@ -151,7 +152,6 @@
     },
     watch: {
       addTableMethod(val, oldVal) {
-        console.log(val)
         if (val == 'table') {
           this.stableSelectDisabled = true
           this.templateStable = ''
@@ -260,7 +260,6 @@
       },
       addTable(dbInfo) {
         this.tableFormDialog = true
-        // this.$emit('tableChanged', this.templateStable, 'super', this.db)
         let payload = {
           ip: this.links[this.linkKey].host,
           port: this.links[this.linkKey].port,
@@ -290,11 +289,13 @@
             let stableDescribe = data.data
             for (let i = 0; i < stableDescribe.length; i++) {
               if (stableDescribe[i].Note == 'TAG') {
-                stAndTagName.tableTagName.push(stableDescribe[i].Field)
+                stAndTagName.tableTagName.push({
+                  name: stableDescribe[i].Field,
+                  type: stableDescribe[i].Type,
+                })
               }
             }
             this.tableFormDialog = false
-
             this.$emit('addTab', '创建表-根据模板', stAndTagName, 'CreateTableWithTemp')
           }
         })
@@ -304,7 +305,7 @@
       },
       searchTable(dbInfo) {
         let payload = {
-          ip: this.links[this.linkKey].host,
+          ip: this.links[this.linkKey].ip,
           port: this.links[this.linkKey].port,
           user: this.links[this.linkKey].user,
           password: this.links[this.linkKey].password,
@@ -332,7 +333,35 @@
         }
       },
       editSTable(row) {},
-
+      delTable() {
+        this.$confirm('此操作将永久表' + this.table.table_name + '及其所有数据, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+          .then(() => {
+            let payload = {
+              ip: this.links[this.linkKey].host,
+              port: this.links[this.linkKey].port,
+              user: this.links[this.linkKey].user,
+              password: this.links[this.linkKey].password,
+            }
+            dropTable(this.table.table_name, this.db.name, payload).then((data) => {
+              if (data.res) {
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!',
+                })
+              }
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除',
+            })
+          })
+      },
       closeSearchDialog() {
         this.searchFormDialog = false
         this.searchingTableName = ''

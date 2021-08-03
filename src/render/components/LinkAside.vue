@@ -27,7 +27,7 @@
     </template>
   </el-dialog>
   <!-- 右键菜单 -->
-  <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB" :links="links" :linkKey="linkKey" @addTab="addTab" @tableChanged="tableChanged"></ContextMenu>
+  <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB" :links="links" :linkKey="linkKey" @addTab="addTab" @tableChanged="tableChanged" :table="rightTable"></ContextMenu>
   <div v-loading="loadingLinks">
     <el-row>
       <el-button class="linkBtn" @click="addLinkDialog = true" size="small" type="primary" plain style="font-size: 14px">新建连接</el-button>
@@ -134,6 +134,7 @@
         },
         menuVisible: false,
         rightPanelType: '',
+        rightTable: {},
         rightPanelDB: {},
       }
     },
@@ -335,6 +336,7 @@
             this.rightPanelDB = father
             this.rightPanelType = 'root' + type
           } else {
+            this.rightTable = row.data
             this.rightPanelDB = father
             this.rightPanelType = type
           }
