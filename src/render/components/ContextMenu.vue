@@ -18,7 +18,7 @@
       删除数据库
     </div>
     <!-- 表菜单部分 -->
-    <div class="contextmenu__item" @click="addTable(CurrentRow)" v-if="type == 'table' || type == 'roottable'">
+    <div class="contextmenu__item" @click="addTable()" v-if="type == 'table' || type == 'roottable'">
       <i class="fa fa-plus-circle"></i>
       添加表
     </div>
@@ -91,18 +91,21 @@
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-model="tableFormDialog" title="请选择创建表的方式">
-    <el-radio-group v-model="radio">
-      <el-radio :label="3">以超级表作为模板</el-radio>
-      <el-radio :label="6">直接创建</el-radio>
+  <el-dialog v-model="tableFormDialog" title="请选择创建表的方式" width="35%">
+    <el-radio-group v-model="addTableMethod">
+      <p>
+        <el-radio label="stable">以超级表作为模板</el-radio>
+        <el-select v-model="templateStable" placeholder="请选择超级表" size="mini" style="width: 50%">
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
+      </p>
+      <p style="margin-top: 15px">
+        <el-radio label="table">直接创建</el-radio>
+      </p>
     </el-radio-group>
-  </el-dialog>
-  <el-dialog v-model="stableFormDialog" title="请输入超级表名" @close="closeSTableDialog">
-    <el-input v-model="stableFrom.stableName" autocomplete="off"></el-input>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="closeSTableDialog" size="medium">取 消</el-button>
-        <el-button type="primary" @click="createSTable(stableFrom.stableName)" size="medium">确 定</el-button>
+        <el-button type="primary" @click="realAddTable" size="mini">下一步</el-button>
       </span>
     </template>
   </el-dialog>
@@ -113,7 +116,7 @@
   </el-dialog>
 </template>
 <script>
-  import { createDatabase, dropDatabase, showTables } from '../utils/taosrestful'
+  import { createDatabase, dropDatabase, showTables, showSuperTables } from '../utils/taosrestful'
   export default {
     name: 'ContextMenu',
     props: {
@@ -137,14 +140,10 @@
           dBblocks: '',
         },
         tableFormDialog: false,
-        stableFormDialog: false,
         searchFormDialog: false,
         searchingTableName: '',
         tableOptions: [],
-        stableFrom: {
-          stableName: '',
-          schema: [],
-        },
+        addTableMethod: 'stable',
       }
     },
     methods: {
@@ -249,10 +248,21 @@
       addTable() {
         this.tableFormDialog = true
       },
+      realAddTable() {
+        alert(this.addTableMethod)
+        showTables(dbInfo.name, payload).then((data) => {
+          if (data.res) {
+            let tableCollect = data.data
+            for (let i = 0; i < tableCollect.length; i++) {
+              tableCollect[i].label = tableCollect[i].value = tableCollect[i].table_name
+            }
+            this.tableOptions = tableCollect
+            this.searchFormDialog = true
+          }
+        })
+      },
       addSTable(db) {
-        // console.log(db)
         this.$emit('addTab', '创建超级表', db, 'CreateSTable')
-        // this.stableFormDialog = true
       },
       searchTable(dbInfo) {
         let payload = {
@@ -283,17 +293,8 @@
           }
         }
       },
-      editSTable(row) {
-        this.stableFormDialog = false
-      },
-      createSTable(name) {
-        console.log(name)
-        this.stableFormDialog = false
-      },
-      closeSTableDialog() {
-        this.stableFormDialog = false
-        this.stableFrom.stableName = ''
-      },
+      editSTable(row) {},
+
       closeSearchDialog() {
         this.searchFormDialog = false
         this.searchingTableName = ''
