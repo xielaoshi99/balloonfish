@@ -112,7 +112,7 @@
   <el-dialog v-model="searchFormDialog" title="搜索表" @close="closeSearchDialog" width="30%" :close-on-click-modal="false" top="30%">
     <el-select-v2 v-model="searchingTableName" filterable :options="tableOptions" placeholder="请输入表名" size="mini" />
     &nbsp;
-    <el-button type="primary" @click="getSearchedTable(searchingTableName)" size="mini">搜索</el-button>
+    <el-button type="primary" @click="getSearchedTable(searchingTableName)" size="mini">确定</el-button>
   </el-dialog>
 </template>
 <script>
@@ -305,7 +305,7 @@
       },
       searchTable(dbInfo) {
         let payload = {
-          ip: this.links[this.linkKey].ip,
+          ip: this.links[this.linkKey].host,
           port: this.links[this.linkKey].port,
           user: this.links[this.linkKey].user,
           password: this.links[this.linkKey].password,
