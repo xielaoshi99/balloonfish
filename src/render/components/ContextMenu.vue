@@ -91,7 +91,7 @@
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-model="tableFormDialog" title="请选择创建表的方式" width="35%">
+  <el-dialog v-model="tableFormDialog" title="请选择创建表的方式" width="35%" @close="closeTableDialog">
     <el-radio-group v-model="addTableMethod">
       <p>
         <el-radio label="stable">以超级表作为模板</el-radio>
@@ -260,6 +260,7 @@
       },
       addTable(dbInfo) {
         this.tableFormDialog = true
+        // this.$emit('tableChanged', this.templateStable, 'super', this.db)
         let payload = {
           ip: this.links[this.linkKey].host,
           port: this.links[this.linkKey].port,
@@ -293,6 +294,7 @@
               }
             }
             this.tableFormDialog = false
+
             this.$emit('addTab', '创建表-根据模板', stAndTagName, 'CreateTableWithTemp')
           }
         })
@@ -334,6 +336,11 @@
       closeSearchDialog() {
         this.searchFormDialog = false
         this.searchingTableName = ''
+      },
+      closeTableDialog() {
+        this.tableFormDialog = false
+        this.templateStable = ''
+        this.addTableMethod = 'stable'
       },
     },
   }

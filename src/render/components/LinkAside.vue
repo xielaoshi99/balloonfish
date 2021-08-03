@@ -27,7 +27,7 @@
     </template>
   </el-dialog>
   <!-- 右键菜单 -->
-  <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB" :links="links" :linkKey="linkKey" @addTab="addTab"></ContextMenu>
+  <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB" :links="links" :linkKey="linkKey" @addTab="addTab" @tableChanged="tableChanged"></ContextMenu>
   <div v-loading="loadingLinks">
     <el-row>
       <el-button class="linkBtn" @click="addLinkDialog = true" size="small" type="primary" plain style="font-size: 14px">新建连接</el-button>
@@ -72,7 +72,7 @@
                   @tableChanged="tableChanged"
                   @node-contextmenu="
                     (event, nodedata, node) => {
-                      rightClick(node, nodedata, event, 'stable', index)
+                      rightClick(node, nodedata, event, 'stable', index, props.row)
                     }
                   "
                 ></STableTree>
@@ -83,7 +83,7 @@
                   @tableChanged="tableChanged"
                   @node-contextmenu="
                     (event, nodedata, node) => {
-                      rightClick(node, nodedata, event, 'table', index)
+                      rightClick(node, nodedata, event, 'table', index, props.row)
                     }
                   "
                 ></TableTree>
@@ -326,16 +326,16 @@
       rowClass() {
         return 'dbCol'
       },
-      rightClick(row, column, event, type, linkKey) {
+      rightClick(row, column, event, type, linkKey, father) {
         this.linkKey = linkKey
         //this.alartDB(link, row.name)
         this.theLink = this.links[linkKey]
         if (type != 'db') {
           if (column.children) {
-            this.rightPanelDB = this.dbInfo
+            this.rightPanelDB = father
             this.rightPanelType = 'root' + type
           } else {
-            this.rightPanelDB = this.dbInfo
+            this.rightPanelDB = father
             this.rightPanelType = type
           }
         } else {

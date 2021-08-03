@@ -23,7 +23,6 @@
   </el-card>
 </template>
 <script>
-  import { dataTypeOption } from '../utils/options'
   export default {
     name: 'CreateTableWithTemp',
     props: {
@@ -37,15 +36,12 @@
       }
     },
     created() {
-      console.log(this.table)
       for (let i = 0; i < this.table.tableTagName.length; i++) {
         this.columnData.push({
           tagName: this.table.tableTagName[i],
           tagValue: '',
         })
       }
-      console.log(this.dbname)
-      console.log(this.link)
     },
     methods: {
       editColumnData(row, column, cell, event) {
@@ -61,8 +57,8 @@
           this.$prompt('请输入表名', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
-            inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-            inputErrorMessage: '表名格式不正确',
+            // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+            // inputErrorMessage: '表名格式不正确',
           }).then(({ value }) => {
             this.$message({
               type: 'success',
