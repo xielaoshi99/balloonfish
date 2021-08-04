@@ -71,17 +71,12 @@
           this.TableData[0].children.pop()
           this.lastNum += 10
           this.TableData[0].children = this.tableList.slice(0, this.lastNum)
-          this.TableData[0].children.push({ table_name: '更多...' })
+          if (this.TableData[0].children.length < this.tableList.length) {
+            this.TableData[0].children.push({ table_name: '更多...' })
+          }
         }
         this.$emit('tableChanged', data, 'table', this.db)
       },
     },
   }
 </script>
-<style>
-  .el-tree-node__children {
-    max-height: 350px;
-    overflow-y: auto !important;
-    overflow-x: hidden;
-  }
-</style>

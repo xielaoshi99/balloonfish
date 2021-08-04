@@ -26,11 +26,11 @@
       <i class="fa fa-search"></i>
       搜索表
     </div>
-    <div class="contextmenu__item" @click="editTable(CurrentRow)" v-if="type == 'table'">
+    <div class="contextmenu__item" @click="editTable(db)" v-if="type == 'table'">
       <i class="fa fa-edit"></i>
       编辑表
     </div>
-    <div class="contextmenu__item" @click="delTable(CurrentRow)" v-if="type == 'table'">
+    <div class="contextmenu__item" @click="delTable(db)" v-if="type == 'table'">
       <i class="fa fa-trash-o"></i>
       删除表
     </div>
@@ -39,11 +39,11 @@
       <i class="fa fa-plus-circle"></i>
       添加超级表
     </div>
-    <div class="contextmenu__item" @click="editSTable(CurrentRow)" v-if="type == 'stable'">
+    <div class="contextmenu__item" @click="editSTable(db)" v-if="type == 'stable'">
       <i class="fa fa-edit"></i>
       编辑超级表
     </div>
-    <div class="contextmenu__item" @click="delSTable(CurrentRow)" v-if="type == 'stable'">
+    <div class="contextmenu__item" @click="delSTable(db)" v-if="type == 'stable'">
       <i class="fa fa-trash-o"></i>
       删除超级表
     </div>
@@ -319,8 +319,8 @@
           this.$emit('addTab', ' 创建表-直接创建', this.db, 'CreateTable', this.links[this.linkKey])
         }
       },
-      addSTable(db) {
-        this.$emit('addTab', ' 创建超级表', db, 'CreateSTable', this.links[this.linkKey])
+      addSTable(dbInfo) {
+        this.$emit('addTab', ' 创建超级表', dbInfo, 'CreateSTable', this.links[this.linkKey])
       },
       searchTable(dbInfo) {
         let payload = {
@@ -357,8 +357,10 @@
           }
         }
       },
-      editSTable(row) {},
-      delSTable() {
+      editSTable(dbInfo) {
+        alert('编辑功能待开发！')
+      },
+      delSTable(dbInfo) {
         this.$confirm('此操作将永久删除超级表' + this.table.name + '，所属表及所有数据也将会一并删除！是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -371,7 +373,7 @@
               user: this.links[this.linkKey].user,
               password: this.links[this.linkKey].password,
             }
-            dropTable(this.table.name, this.db.name, payload).then((data) => {
+            dropTable(this.table.name, dbInfo.name, payload).then((data) => {
               if (data.res) {
                 this.$message({
                   type: 'success',
@@ -393,7 +395,10 @@
             })
           })
       },
-      delTable() {
+      editTable(dbInfo) {
+        alert('编辑功能待开发！')
+      },
+      delTable(dbInfo) {
         this.$confirm('此操作将永久删除表' + this.table.table_name + '及其所有数据, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -406,7 +411,7 @@
               user: this.links[this.linkKey].user,
               password: this.links[this.linkKey].password,
             }
-            dropTable(this.table.table_name, this.db.name, payload).then((data) => {
+            dropTable(this.table.table_name, dbInfo.name, payload).then((data) => {
               if (data.res) {
                 this.$message({
                   type: 'success',
@@ -438,7 +443,6 @@
         this.addTableMethod = 'stable'
       },
       runSQL(dbInfo) {
-        console.log(dbInfo)
         this.$emit('addTab', ' 自定义SQL@' + dbInfo.name, dbInfo, 'QuerySQL', this.links[this.linkKey])
       },
     },
