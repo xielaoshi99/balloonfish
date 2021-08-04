@@ -34,7 +34,7 @@
   <!-- 右键菜单 -->
   <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB" :links="links" :linkKey="linkKey" @addTab="addTab" @tableChanged="tableChanged" :table="rightTable"></ContextMenu>
   <div v-loading="loadingLinks">
-    <el-menu @open="freshDB" :unique-opened="false" class="menus">
+    <el-menu @open="freshDB($event, false)" :unique-opened="false" class="menus">
       <el-submenu :index="String(index)" :key="index" v-for="(link, index) in links">
         <template #title>
           <span>{{ link.name }}</span>
@@ -42,7 +42,8 @@
             {{ link.version }}
           </el-tag>
           <div class="connection-opt-icons">
-            <i title="刷新" class="connection-right-icon fa fa-refresh font-weight-bold" @click.stop.prevent="freshDB(index)"></i>
+            <i title="用户管理" class="connection-right-icon fa fa-user-o font-weight-bold" @click.stop.prevent="editUser(index)"></i>
+            <i title="刷新" class="connection-right-icon fa fa-refresh font-weight-bold" @click.stop.prevent="freshDB(index, true)"></i>
             <i title="编辑连接" class="connection-right-icon fa fa-edit font-weight-bold" @click.stop.prevent="editLink(index)"></i>
             <i title="删除连接" class="connection-right-icon fa fa-trash-o font-weight-bold" @click.stop.prevent="deleteLink(index)"></i>
           </div>
@@ -238,7 +239,9 @@
                 password: '',
               }
               if (this.linkDialogTitle != '新建连接') {
-                this.freshDB(this.linkKey)
+                for (let i = 0; i < this.links.length; i++) {
+                  this.freshDB(i, false)
+                }
               }
               this.$message({
                 message: '连接成功',
@@ -279,7 +282,7 @@
             })
           })
       },
-      freshDB(key) {
+      freshDB(key, mes) {
         let theLink = this.links[key]
         let payload = {
           host: theLink.host,
@@ -292,11 +295,13 @@
         showDatabases(payload).then((data) => {
           this.loadingLinks = false
           if (data.res) {
-            this.$message({
-              message: '刷新成功',
-              type: 'success',
-              duration: 1000,
-            })
+            if (mes) {
+              this.$message({
+                message: '刷新成功',
+                type: 'success',
+                duration: 1000,
+              })
+            }
             this.links[key].dbs = data.data
           } else {
             //连接失败，1.提示 2.删除当前连接 3.重新连接
@@ -363,7 +368,13 @@
       tableChanged(table, type, db) {
         this.$emit('tableChanged', table, type, db)
       },
-
+      editUser(index) {
+        if (this.links[index].user != 'root') {
+          this.$message.warning('请使用root用户登录')
+        } else {
+          alert('用户管理开发中')
+        }
+      },
       rowClass() {
         return 'dbCol'
       },

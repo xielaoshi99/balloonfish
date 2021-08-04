@@ -200,7 +200,7 @@
                   type: 'success',
                   duration: 1000,
                 })
-                this.$parent.freshDB(this.linkKey)
+                this.$parent.freshDB(this.linkKey, false)
               } else {
                 this.$message({
                   message: data.msg,
@@ -209,7 +209,7 @@
                 })
               }
               this.loadingLinks = false
-              this.freshDB(key)
+              this.freshDB(key, false)
             })
           })
           .catch(() => {
@@ -246,7 +246,7 @@
                 type: 'success',
                 duration: 1000,
               })
-              this.$parent.freshDB(this.linkKey)
+              this.$parent.freshDB(this.linkKey, false)
               this.closeDBDialog()
             } else {
               this.$message({
