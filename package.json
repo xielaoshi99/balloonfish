@@ -28,12 +28,14 @@
       "to": "app/src/preload"
     },
     "mac": {
+      "icon": "/src/render/public/favicon.ico",
       "artifactName": "${productName}_${version}.${ext}",
       "target": [
         "dmg"
       ]
     },
     "win": {
+      "icon": "/src/render/public/favicon.ico",
       "target": [
         {
           "target": "nsis",
