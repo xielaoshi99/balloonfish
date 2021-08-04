@@ -118,7 +118,7 @@
     },
     props: {},
     // 定义抛出的事件名称
-    emits: ['tableChanged', 'addTab', 'linkChanged'],
+    emits: ['tableChanged', 'addTabMain', 'linkChanged'],
 
     data() {
       return {
@@ -144,7 +144,7 @@
       let links = getLinks()
       for (let i = 0, len = links.length; i < len; i++) {
         let payload = {
-          ip: links[i].host,
+          host: links[i].host,
           port: links[i].port,
           user: links[i].user,
           password: links[i].password,
@@ -178,7 +178,7 @@
       },
       testLink() {
         let payload = {
-          ip: this.linkForm.host,
+          host: this.linkForm.host,
           port: this.linkForm.port,
           user: this.linkForm.user,
           password: this.linkForm.password,
@@ -202,7 +202,7 @@
       confirmAddLink() {
         //新建连接，先连接，如果成功，将payload+name记入本地
         let payload = {
-          ip: this.linkForm.host,
+          host: this.linkForm.host,
           port: this.linkForm.port,
           user: this.linkForm.user,
           password: this.linkForm.password,
@@ -242,7 +242,7 @@
       freshDB(key) {
         let theLink = this.links[key]
         let payload = {
-          ip: theLink.host,
+          host: theLink.host,
           port: theLink.port,
           user: theLink.user,
           password: theLink.password,
@@ -306,7 +306,8 @@
       dbTableExpand(row, expandedRows, link) {
         this.alartDB(link, row.name)
       },
-      addTab(newTabTitle, table, type) {
+      //addTab方法中转站，承上启下
+      addTab(newTabTitle, table, type, link) {
         let icon
         if (type == 'STableView') {
           icon = 'fa fa-sitemap'
@@ -317,7 +318,7 @@
         } else if (type == 'CreateSTable' || type == 'CreateTable') {
           icon = 'fa fa-plus-circle'
         }
-        this.$emit('addTab', newTabTitle, table, type, icon)
+        this.$emit('addTabMain', newTabTitle, table, type, icon, link)
       },
       tableChanged(table, type, db) {
         this.$emit('tableChanged', table, type, db)

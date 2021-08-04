@@ -150,6 +150,7 @@
         }
         let offsetVal = (this.currentPageTable - 1) * this.eachPageTable
         if (this.table.table_name) {
+          console.log(this.link)
           selectData(this.table.table_name, this.dbname, this.link, this.tableFilter.fields, this.surperWhere, this.eachPageTable, offsetVal, this.surperTorder, startTime, endTime).then((data) => {
             if (data.res) {
               let tableDescribe = data.describe

@@ -35,7 +35,7 @@
     methods: {
       freshTables() {
         let payload = {
-          ip: this.link.host,
+          host: this.link.host,
           port: this.link.port,
           user: this.link.user,
           password: this.link.password,
@@ -65,7 +65,7 @@
       },
       tableNodeClick(data) {
         if (data.uid) {
-          this.$emit('addTab', ' 表 ' + data.table_name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data, 'TableView')
+          this.$emit('addTab', ' 表 ' + data.table_name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data, 'TableView', this.link)
         }
         if (data.table_name == '更多...') {
           this.TableData[0].children.pop()

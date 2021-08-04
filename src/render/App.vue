@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-aside class="linksMenu">
-      <LinkAside @tableChanged="tableChanged" @addTab="addTab" @linkChanged="linkChanged"></LinkAside>
+      <LinkAside @tableChanged="tableChanged" @addTabMain="addTabMain" @linkChanged="linkChanged"></LinkAside>
     </el-aside>
     <el-main class="main">
       <el-tabs v-model="activeTab" type="card" closable @tab-remove="removeTab">
@@ -10,7 +10,7 @@
             <i :class="item.icon"></i>
             <span>{{ item.title }}</span>
           </template>
-          <component :is="item.content" :table="item.table" :dbname="selectedDB.name" :link="theLink" />
+          <component :is="item.content" :table="item.table" :dbname="selectedDB.name" :link="item.link" />
         </el-tab-pane>
       </el-tabs>
     </el-main>
@@ -92,7 +92,7 @@
         this.activeTab = activeName
         this.mainTabs = tabs.filter((tab) => tab.name !== targetName)
       },
-      addTab(newTabTitle, table, type, icon) {
+      addTabMain(newTabTitle, table, type, icon, link) {
         for (let i = 0; i < this.mainTabs.length; i++) {
           if (newTabTitle == this.mainTabs[i].title) {
             this.activeTab = this.mainTabs[i].name
@@ -106,6 +106,7 @@
           table: table,
           content: type,
           icon: icon,
+          link: link,
         })
         this.activeTab = newTabName
       },

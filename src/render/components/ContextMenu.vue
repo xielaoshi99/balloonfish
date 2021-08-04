@@ -181,7 +181,7 @@
       },
       delDb(dbInfo) {
         let payload = {
-          ip: this.links[this.linkKey].host,
+          host: this.links[this.linkKey].host,
           port: this.links[this.linkKey].port,
           user: this.links[this.linkKey].user,
           password: this.links[this.linkKey].password,
@@ -233,12 +233,12 @@
       },
       postDB() {
         let payload = {
-          ip: this.links[this.linkKey].host,
+          host: this.links[this.linkKey].host,
           port: this.links[this.linkKey].port,
           user: this.links[this.linkKey].user,
           password: this.links[this.linkKey].password,
         }
-        if ((this.dBDialogTitle = '添加数据库')) {
+        if (this.dBDialogTitle == '添加数据库') {
           createDatabase(this.dBFrom.dBname, payload, true, this.dBFrom.dBkeep, this.dBFrom.dBupdate, this.dBFrom.dBcomp, this.dBFrom.dBreplica, this.dBFrom.dBquorum, this.dBFrom.dBblocks).then((data) => {
             if (data.res) {
               this.$message({
@@ -256,12 +256,14 @@
               })
             }
           })
+        } else if (this.dBDialogTitle == '编辑数据库') {
+          alert('编辑模式待开发！')
         }
       },
       addTable(dbInfo) {
         this.tableFormDialog = true
         let payload = {
-          ip: this.links[this.linkKey].host,
+          host: this.links[this.linkKey].host,
           port: this.links[this.linkKey].port,
           user: this.links[this.linkKey].user,
           password: this.links[this.linkKey].password,
@@ -282,7 +284,7 @@
       realAddTable() {
         if (this.addTableMethod === 'stable') {
           let payload = {
-            ip: this.links[this.linkKey].host,
+            host: this.links[this.linkKey].host,
             port: this.links[this.linkKey].port,
             user: this.links[this.linkKey].user,
             password: this.links[this.linkKey].password,
@@ -303,7 +305,7 @@
                 }
               }
               this.tableFormDialog = false
-              this.$emit('addTab', ' 创建表-根据模板', stAndTagName, 'CreateTableWithTemp')
+              this.$emit('addTab', ' 创建表-根据模板', stAndTagName, 'CreateTableWithTemp', this.links[this.linkKey])
             } else {
               this.$message({
                 message: data.msg,
@@ -314,15 +316,15 @@
           })
         } else {
           this.tableFormDialog = false
-          this.$emit('addTab', ' 创建表-直接创建', this.db, 'CreateTable')
+          this.$emit('addTab', ' 创建表-直接创建', this.db, 'CreateTable', this.links[this.linkKey])
         }
       },
       addSTable(db) {
-        this.$emit('addTab', ' 创建超级表', db, 'CreateSTable')
+        this.$emit('addTab', ' 创建超级表', db, 'CreateSTable', this.links[this.linkKey])
       },
       searchTable(dbInfo) {
         let payload = {
-          ip: this.links[this.linkKey].host,
+          host: this.links[this.linkKey].host,
           port: this.links[this.linkKey].port,
           user: this.links[this.linkKey].user,
           password: this.links[this.linkKey].password,
@@ -350,7 +352,7 @@
           if (name == this.tableOptions[i].table_name) {
             data = this.tableOptions[i]
             this.searchFormDialog = false
-            this.$emit('addTab', ' 表 ' + data.table_name + '@' + this.db.name + ' | ' + this.links[this.linkKey].host + ':' + this.links[this.linkKey].port, data, 'TableView')
+            this.$emit('addTab', ' 表 ' + data.table_name + '@' + this.db.name + ' | ' + this.links[this.linkKey].host + ':' + this.links[this.linkKey].port, data, 'TableView', this.links[this.linkKey])
             break
           }
         }
@@ -364,7 +366,7 @@
         })
           .then(() => {
             let payload = {
-              ip: this.links[this.linkKey].host,
+              host: this.links[this.linkKey].host,
               port: this.links[this.linkKey].port,
               user: this.links[this.linkKey].user,
               password: this.links[this.linkKey].password,
@@ -399,7 +401,7 @@
         })
           .then(() => {
             let payload = {
-              ip: this.links[this.linkKey].host,
+              host: this.links[this.linkKey].host,
               port: this.links[this.linkKey].port,
               user: this.links[this.linkKey].user,
               password: this.links[this.linkKey].password,
@@ -437,7 +439,7 @@
       },
       runSQL(dbInfo) {
         console.log(dbInfo)
-        this.$emit('addTab', ' 自定义SQL@' + dbInfo.name, dbInfo, 'QuerySQL')
+        this.$emit('addTab', ' 自定义SQL@' + dbInfo.name, dbInfo, 'QuerySQL', this.links[this.linkKey])
       },
     },
   }

@@ -41,7 +41,7 @@
       freshSurperTables() {
         //清理选中的超级表和具体数据
         let payload = {
-          ip: this.link.host,
+          host: this.link.host,
           port: this.link.port,
           user: this.link.user,
           password: this.link.password,
@@ -64,7 +64,7 @@
       },
       superTableNodeClick(data) {
         if (data.created_time) {
-          this.$emit('addTab', ' 超级表 ' + data.name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data, 'STableView')
+          this.$emit('addTab', ' 超级表 ' + data.name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data, 'STableView', this.link)
         }
         this.$emit('tableChanged', data, 'super', this.db)
       },

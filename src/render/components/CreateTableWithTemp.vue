@@ -68,7 +68,7 @@
               this.columnData[i].isEdit = false
             }
             let payload = {
-              ip: this.link.ip,
+              host: this.link.host,
               port: this.link.port,
               user: this.link.user,
               password: this.link.password,
