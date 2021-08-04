@@ -1,68 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BalloonFish</title>
+    <style>
+      @font-face {
+        font-family: 'Harmony';
+        src: url(./huawei.ttf);
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BalloonFish</title>
-  <style>
-    @font-face {
-      font-family: 'Harmony';
-      src: url(./huawei.ttf);
-    }
+      .el-button {
+        font-family: 'Harmony' !important;
+      }
 
-    .el-button {
-      font-family: 'Harmony' !important;
-    }
+      .el-submenu__title {
+        padding-left: 0px !important;
+      }
 
-    .el-submenu__title {
-      padding-left: 0px !important;
-    }
+      html {
+        font-family: 'Harmony' !important;
+      }
 
-    html {
-      font-family: 'Harmony' !important;
-    }
+      body {
+        margin: 0;
+        font-family: 'Harmony' !important;
+      }
 
-    body {
-      margin: 0;
-      font-family: 'Harmony' !important;
-    }
+      .el-aside {
+        border: 0 !important;
+      }
 
-    .el-aside {
-      border: 0 !important;
-    }
+      .el-table__expanded-cell[class*='cell'] {
+        padding-top: 5px !important;
+        padding-left: 20px !important;
+        padding-bottom: 5px !important;
+        padding-right: 2px !important;
+      }
 
-    .el-table__expanded-cell[class*='cell'] {
-      padding-top: 5px !important;
-      padding-left: 20px !important;
-      padding-bottom: 5px !important;
-      padding-right: 2px !important;
-    }
+      ::-webkit-scrollbar {
+        width: 8px;
 
-    ::-webkit-scrollbar {
-      width: 8px;
+        height: 8px;
+      }
 
-      height: 8px;
-    }
+      ::-webkit-scrollbar-thumb {
+        border-radius: 14px;
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #dddddd;
+      }
 
-    ::-webkit-scrollbar-thumb {
-      border-radius: 14px;
-      -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-      background: #dddddd;
-    }
+      ::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        border-radius: 0;
+        background: none;
+      }
+    </style>
+  </head>
 
-    ::-webkit-scrollbar-track {
-      -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-      border-radius: 0;
-      background: none;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="app"></div>
-  <script type="module" src="/main.ts"></script>
-</body>
-
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/main.ts"></script>
+  </body>
 </html>

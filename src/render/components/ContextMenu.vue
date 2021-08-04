@@ -443,7 +443,7 @@
         this.addTableMethod = 'stable'
       },
       runSQL(dbInfo) {
-        this.$emit('addTab', ' 自定义SQL@' + dbInfo.name, dbInfo, 'QuerySQL', this.links[this.linkKey])
+        this.$emit('addTab', ' 自定义SQL@' + dbInfo.name + ' | ' + this.links[this.linkKey].host + ':' + this.links[this.linkKey].port, dbInfo, 'QuerySQL', this.links[this.linkKey])
       },
     },
   }

@@ -14,7 +14,7 @@
     "build": "rimraf dist && npm run build:vue && npm run build:ele && electron-builder"
   },
   "build": {
-    "appId": "xielaoshi1999",
+    "appId": "com.tcdri.xielaoshi.balloonfish",
     "asar": false,
     "directories": {
       "output": "release/${version}"

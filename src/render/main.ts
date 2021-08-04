@@ -11,6 +11,7 @@ import 'font-awesome/css/font-awesome.css'
 import 'xe-utils'
 import VXETable from 'vxe-table'
 import 'vxe-table/lib/style.css'
+
 // setTimeout(() => {
 //   console.log("ipcRenderer:", ipcRenderer);
 //   // Configuration name causes hot updates to be slow | 传递 name 后会导致热更新很慢

@@ -17,7 +17,7 @@ export function AddALink(theLink) {
   //添加一个连接，如果本地就存了，更新，没存新增
   let links = getLinks()
   for (let i = 0; i < links.length; i++) {
-    if (theLink.host == links[i].host && theLink.port == links[i].port) {
+    if (theLink.id == links[i].id) {
       //更新
       links[i] = theLink
       return setLinks(links)

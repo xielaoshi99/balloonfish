@@ -1,6 +1,6 @@
 <template>
   <!-- 新建连接的弹窗 -->
-  <el-dialog v-model="addLinkDialog" title="新建连接">
+  <el-dialog v-model="linkDialog" :title="linkDialogTitle" @close="cancelAddLink">
     <el-form :model="linkForm" class="linkformstyle" label-width="80px">
       <el-form-item label="名称" prop="name">
         <el-input v-model="linkForm.name"></el-input>
@@ -28,7 +28,7 @@
   </el-dialog>
 
   <el-row>
-    <el-button class="linkBtn" @click="addLinkDialog = true" size="small" type="primary" plain style="font-size: 14px">新建连接</el-button>
+    <el-button class="linkBtn" @click="linkDialog = true" size="small" type="primary" plain style="font-size: 14px">新建连接</el-button>
   </el-row>
 
   <!-- 右键菜单 -->
@@ -44,7 +44,7 @@
           <div class="connection-opt-icons">
             <i title="刷新" class="connection-right-icon fa fa-refresh font-weight-bold" @click.stop.prevent="freshDB(index)"></i>
             <i title="编辑连接" class="connection-right-icon fa fa-edit font-weight-bold" @click.stop.prevent="editLink(index)"></i>
-            <i title="删除连接" class="connection-right-icon fa fa-trash-o font-weight-bold" @click.stop.prevent="deleteLink()"></i>
+            <i title="删除连接" class="connection-right-icon fa fa-trash-o font-weight-bold" @click.stop.prevent="deleteLink(index)"></i>
           </div>
         </template>
         <el-table
@@ -106,6 +106,7 @@
 <script>
   import { getVersion, showDatabases, createDatabase, dropDatabase, showSuperTables, showTables, dropTable } from '../utils/taosrestful'
   import { getLinks, AddALink, deleteALink } from '../utils/localDataStore'
+  import { guid } from '../utils/options'
   import STableTree from '../components/STableTree.vue'
   import TableTree from '../components/TableTree.vue'
   import ContextMenu from '../components/ContextMenu.vue'
@@ -126,7 +127,8 @@
         linkKey: 0,
         theLink: {}, //当前连接
         loadingLinks: false,
-        addLinkDialog: false,
+        linkDialog: false,
+        linkDialogTitle: '新建连接',
         linkForm: {
           name: '',
           host: '',
@@ -164,9 +166,12 @@
           user: '',
           password: '',
         }
-        this.addLinkDialog = false
+        this.linkDialog = false
+        this.linkDialogTitle = '新建连接'
       },
       editLink(index) {
+        this.linkDialogTitle = '编辑连接'
+        this.linkKey = index
         this.linkForm = {
           name: this.links[index].name,
           host: this.links[index].host,
@@ -174,7 +179,7 @@
           user: this.links[index].user,
           password: this.links[index].password,
         }
-        this.addLinkDialog = true
+        this.linkDialog = true
       },
       testLink() {
         let payload = {
@@ -200,7 +205,12 @@
         })
       },
       confirmAddLink() {
-        //新建连接，先连接，如果成功，将payload+name记入本地
+        let linkGuid = ''
+        if (this.linkDialogTitle == '新建连接') {
+          linkGuid = guid()
+        } else {
+          linkGuid = this.links[this.linkKey].id
+        }
         let payload = {
           host: this.linkForm.host,
           port: this.linkForm.port,
@@ -211,6 +221,7 @@
           if (data.res) {
             getVersion(payload).then((_data) => {
               AddALink({
+                id: linkGuid,
                 name: this.linkForm.name || this.linkForm.host,
                 host: this.linkForm.host,
                 port: this.linkForm.port,
@@ -218,7 +229,7 @@
                 password: this.linkForm.password,
                 version: _data,
               })
-              this.addLinkDialog = false
+              this.linkDialog = false
               this.linkForm = {
                 name: '',
                 host: '',
@@ -226,7 +237,14 @@
                 user: '',
                 password: '',
               }
-              //更新连接列表
+              if (this.linkDialogTitle != '新建连接') {
+                this.freshDB(this.linkKey)
+              }
+              this.$message({
+                message: '连接成功',
+                type: 'success',
+                duration: 1000,
+              })
               this.links = getLinks()
             })
           } else {
@@ -238,6 +256,28 @@
             })
           }
         })
+      },
+      deleteLink(index) {
+        this.$confirm('确定删除该连接？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+          .then(() => {
+            deleteALink(index)
+            this.$message({
+              message: '删除成功',
+              type: 'success',
+              duration: 1000,
+            })
+            this.links = getLinks()
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除',
+            })
+          })
       },
       freshDB(key) {
         let theLink = this.links[key]
@@ -282,7 +322,7 @@
               user: theLink.user,
               password: theLink.password,
             }
-            this.addLinkDialog = true
+            this.linkDialog = true
           }
         })
       },
@@ -323,9 +363,7 @@
       tableChanged(table, type, db) {
         this.$emit('tableChanged', table, type, db)
       },
-      deleteLink() {
-        alert(111)
-      },
+
       rowClass() {
         return 'dbCol'
       },

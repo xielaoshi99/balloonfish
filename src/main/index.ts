@@ -21,7 +21,7 @@ function createWin() {
       preload: join(__dirname, '../../src/preload/index.js'),
     },
   })
-  //win.webContents.openDevTools()
+  win.webContents.openDevTools()
   Menu.setApplicationMenu(null) //隐藏菜单栏
   const URL = app.isPackaged
     ? `file://${join(__dirname, '../render/index.html')}` // vite 构建后的静态文件地址
