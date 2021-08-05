@@ -10,9 +10,9 @@
     </template>
     <el-button type="success" size="mini" @click="addUser()">创建用户</el-button>
     <el-button type="danger" size="mini" @click="delUser()">删除用户</el-button>
-    <el-table size="mini" :data="userData" border height="400" style="width: 100%; margin-top: 10px" @cell-click="editColumnData">
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="name" label="名称"></el-table-column>
+    <el-table size="mini" :data="userData" border height="400" style="width: 100%; margin-top: 10px" @cell-click="editColumnData" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" :selectable="checkSelectable" width="55"></el-table-column>
+      <el-table-column prop="name" label="登录名称"></el-table-column>
       <el-table-column prop="account" label="账户"></el-table-column>
       <el-table-column prop="privilege" label="权限"></el-table-column>
       <el-table-column prop="create_time" label="创建时间" width="180"></el-table-column>
@@ -25,7 +25,7 @@
   </el-card>
   <el-dialog v-model="userDialog" :title="userDialogTitle" @close="closeUserDialog" width="35%">
     <el-form :model="userForm" class="userFormstyle" label-width="80px">
-      <el-form-item label="账号" prop="account" size="mini">
+      <el-form-item label="登录名称" prop="account" size="mini">
         <el-input v-model="userForm.account"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password" size="mini">
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-  import { getUsers, createUsers } from '../utils/taosrestful'
+  import { getUsers, createUsers, alterUsers, delUsers } from '../utils/taosrestful'
   import { privilegeOption } from '../utils/funCommon'
   export default {
     name: 'UserManage',
@@ -67,6 +67,7 @@
         },
         userData: [],
         privilegeO: [],
+        selectedUsers: [],
       }
     },
     created() {
@@ -81,47 +82,104 @@
         this.userDialog = true
       },
       editUser(index) {
-        if (this.userData[index].privilege != 'super') {
+        if (this.userData[index].name == 'root' || this.userData[index].name == '_root' || this.userData[index].name == 'monitor') {
+          this.$message('数据库自带用户不能编辑')
+        } else {
+          this.userDialogTitle = '编辑用户'
           this.userDialog = true
           this.userForm = {
-            account: this.userData[index].account,
+            account: this.userData[index].name,
             password: '',
             privilege: this.userData[index].privilege,
           }
-        } else {
-          this.$message('super用户不能编辑')
         }
       },
-      delUser() {},
-      saveUser() {
-        if (this.userForm.account && this.userForm.password && this.userForm.privilege) {
-          createUsers(this.userForm.account, this.userForm.password, this.userForm.privilege, this.link).then((res) => {
-            if (res.res) {
-              this.$message.success('用户添加成功！')
-              this.userDialog = false
-              getUsers(this.link).then((data) => {
-                this.userData = data.data
-              })
-            } else {
-              this.$message({
-                message: res.msg,
-                type: 'error',
-                duration: 1000,
+      delUser() {
+        this.$confirm('此操作将永久删除所选用户, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+          .then(() => {
+            for (let i = 0; i < this.selectedUsers.length; i++) {
+              delUsers(this.selectedUsers[i].name, this.link).then((res) => {
+                console.log(res)
               })
             }
+            this.$message.success('所选用户删除成功！')
+            getUsers(this.link).then((data) => {
+              this.userData = data.data
+            })
           })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除',
+            })
+          })
+      },
+      handleSelectionChange(val) {
+        this.selectedUsers = val
+      },
+      saveUser() {
+        if (this.userDialogTitle == '创建用户') {
+          if (this.userForm.account && this.userForm.password && this.userForm.privilege) {
+            createUsers(this.userForm.account, this.userForm.password, this.userForm.privilege, this.link).then((res) => {
+              if (res.res) {
+                this.$message.success('用户添加成功！')
+                this.userDialog = false
+                getUsers(this.link).then((data) => {
+                  this.userData = data.data
+                })
+              } else {
+                this.$message({
+                  message: res.msg,
+                  type: 'error',
+                  duration: 1000,
+                })
+              }
+            })
+          } else {
+            this.$message.warning('请输入用户信息')
+          }
         } else {
-          this.$message.warning('请输入用户信息')
+          if (this.userForm.account && this.userForm.password && this.userForm.privilege) {
+            alterUsers(this.userForm.account, this.userForm.password, this.userForm.privilege, this.link).then((res) => {
+              if (res.res) {
+                this.$message.success('用户修改成功！')
+                this.userDialog = false
+                getUsers(this.link).then((data) => {
+                  this.userData = data.data
+                })
+              } else {
+                this.$message({
+                  message: res.msg,
+                  type: 'error',
+                  duration: 1000,
+                })
+              }
+            })
+          } else {
+            this.$message.warning('请输入用户信息')
+          }
         }
       },
       cancelAddUser() {
         this.userDialog = false
+        this.userDialogTitle == '创建用户'
       },
       closeUserDialog() {
         this.userForm = {
           account: '',
           password: '',
           privilege: '',
+        }
+      },
+      checkSelectable(row, index) {
+        if (row.name == 'root' || row.name == '_root' || row.name == 'monitor') {
+          return false
+        } else {
+          return true
         }
       },
     },

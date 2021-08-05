@@ -1,6 +1,6 @@
 {
   "name": "balloonfish",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "main": "dist/main/index.js",
   "author": "xielaoshi",
   "license": "MIT",

@@ -240,11 +240,11 @@
                 user: '',
                 password: '',
               }
-              if (this.linkDialogTitle != '新建连接') {
-                for (let i = 0; i < this.links.length; i++) {
-                  this.freshDB(i, false)
-                }
+
+              for (let i = 0; i < this.links.length; i++) {
+                this.freshDB(i, false)
               }
+
               this.$message({
                 message: '连接成功',
                 type: 'success',
@@ -270,12 +270,16 @@
         })
           .then(() => {
             deleteALink(index)
+
             this.$message({
               message: '删除成功',
               type: 'success',
               duration: 1000,
             })
             this.links = getLinks()
+            for (let i = 0; i < this.links.length; i++) {
+              this.freshDB(i, false)
+            }
           })
           .catch(() => {
             this.$message({

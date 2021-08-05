@@ -95,7 +95,6 @@
         this.mainTabs = tabs.filter((tab) => tab.name !== targetName)
       },
       addTabMain(newTabTitle, table, type, icon, link) {
-        debugger
         for (let i = 0; i < this.mainTabs.length; i++) {
           if (newTabTitle == this.mainTabs[i].title) {
             this.activeTab = this.mainTabs[i].name
@@ -119,8 +118,11 @@
       receiveMessage(mesType, mes) {
         switch (mesType) {
           case 'tablecreated':
+            if (this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].tableList.length > 10) {
+              this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].tableList.push(mes)
+            }
             this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].TableData[0].children.push(mes)
-            this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].tableList.push(mes)
+
             break
           case 'stablecreated':
             this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-stable'].superTableData[0].children.push(mes)

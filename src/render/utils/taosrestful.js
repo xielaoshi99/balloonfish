@@ -279,10 +279,27 @@ export function createUsers(account, password, privilege, payload) {
     }
   })
 }
+export function alterUsers(account, password, privilege, payload) {
+  let alterSqlStr = `ALTER USER ${account} PASS '${password}'`
+  let privilegeSql = `ALTER USER ${account} PRIVILEGE ${privilege};`
+  return sendRequest(alterSqlStr, payload).then((a) => {
+    if (a.res) {
+      return sendRequest(privilegeSql, payload)
+    } else {
+      return a
+    }
+  })
+}
+export function delUsers(account, payload) {
+  let sqlStr = `DROP USER ${account}`
+  return sendRequest(sqlStr, payload)
+}
+
 export function getUsers(payload) {
   let sqlStr = `SHOW USERS`
   return sendRequest(sqlStr, payload)
 }
+
 export function rawSql(sqlStr, payload) {
   return sendRequest(sqlStr, payload)
 }
