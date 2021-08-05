@@ -7,9 +7,12 @@ import electron from 'vitejs-plugin-electron'
 
 const root = join(__dirname, 'src/render')
 
-export default defineConfig((env) => {
+export default defineConfig(env => {
   return {
-    plugins: [vue(), electron()],
+    plugins: [
+      vue(),
+      electron(),
+    ],
     root,
     base: './', // index.html 中静态资源加载位置
     server: {
@@ -29,7 +32,7 @@ export default defineConfig((env) => {
       minify: false,
       commonjsOptions: {},
       assetsDir: '', // 相对路径 加载问题
-      sourcemap: false,
+      sourcemap: true,
     },
   }
 })
