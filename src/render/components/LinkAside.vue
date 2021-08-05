@@ -109,7 +109,7 @@
 <script>
   import { getVersion, showDatabases, createDatabase, dropDatabase, showSuperTables, showTables, dropTable } from '../utils/taosrestful'
   import { getLinks, AddALink, deleteALink } from '../utils/localDataStore'
-  import { guid } from '../utils/options'
+  import { guid } from '../utils/funCommon'
   import STableTree from '../components/STableTree.vue'
   import TableTree from '../components/TableTree.vue'
   import ContextMenu from '../components/ContextMenu.vue'
@@ -374,14 +374,14 @@
         if (this.links[index].user != 'root') {
           this.$message.warning('请使用root用户登录')
         } else {
-          alert('用户管理开发中')
+          this.$emit('addTabMain', '用户管理', '', 'UserManage', 'fa fa-user', this.links[index])
         }
       },
       rowClass() {
         return 'dbCol'
       },
       postMessageToMain(mesType, mes) {
-        this.$emit('postMessage', mesType,mes) //传出添加表成功的数据
+        this.$emit('postMessage', mesType, mes) //传出添加表成功的数据
       },
       rightClick(row, column, event, type, linkKey, father) {
         this.linkKey = linkKey

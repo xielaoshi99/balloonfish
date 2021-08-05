@@ -10,6 +10,10 @@ import 'font-awesome/css/font-awesome.css'
 import 'xe-utils'
 import VXETable from 'vxe-table'
 import 'vxe-table/lib/style.css'
+import locale from 'element-plus/lib/locale/lang/zh-cn'
+import 'dayjs/locale/zh-cn'
+
+// 将自动设置 Day.js 的国际化设置为 'zh-cn'
 
 // setTimeout(() => {
 //   console.log("ipcRenderer:", ipcRenderer);

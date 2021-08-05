@@ -52,7 +52,7 @@
         <el-button @click="openTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">筛选条件</el-button>
       </el-col>
       <el-col :span="4" class="freshDataBtn">
-        <el-button @click="getTableData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新</el-button>
+        <el-button @click="getTableData(true, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新</el-button>
       </el-col>
     </el-row>
     <el-row class="superTSearchRow">
@@ -76,7 +76,7 @@
     </el-table>
     <!-- 超级表分页 -->
     <div class="paginationWrapper">
-      <el-pagination :hide-on-single-page="true" :current-page="currentPageTable" @current-change="paginationChange" :page-size="eachPageTable" layout="prev, pager, next" :total="totalTable"></el-pagination>
+      <el-pagination :hide-on-single-page="true" :current-page="currentPageTable" @current-change="paginationChange" :page-size="eachPageTable" layout="total,prev, pager, next" :total="totalTable"></el-pagination>
     </div>
   </div>
 </template>
@@ -114,7 +114,6 @@
     emits: ['postMessage'],
     created() {
       this.getTableData(true)
-      this.$emit('postMessage', '11111')
     },
     methods: {
       openTableFilterD() {

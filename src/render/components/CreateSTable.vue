@@ -49,7 +49,7 @@
   </el-card>
 </template>
 <script>
-  import { dataTypeOption } from '../utils/options'
+  import { dataTypeOption } from '../utils/funCommon'
   import { createSuperTables, showSingleSuperTable } from '../utils/taosrestful'
   export default {
     name: 'CreateSTable',

@@ -27,6 +27,7 @@
   import CreateTable from './components/CreateTable.vue'
   import CreateTableWithTemp from './components/CreateTableWithTemp.vue'
   import QuerySQL from './components/QuerySQL.vue'
+  import UserManage from './components/UserManage.vue'
   import LinkAside from './components/LinkAside.vue'
   import InfoAside from './components/InfoAside.vue'
   import Welcome from './components/Welcome.vue'
@@ -39,6 +40,7 @@
       CreateTable,
       CreateTableWithTemp,
       QuerySQL,
+      UserManage,
       LinkAside,
       InfoAside,
       Welcome,
@@ -93,6 +95,7 @@
         this.mainTabs = tabs.filter((tab) => tab.name !== targetName)
       },
       addTabMain(newTabTitle, table, type, icon, link) {
+        debugger
         for (let i = 0; i < this.mainTabs.length; i++) {
           if (newTabTitle == this.mainTabs[i].title) {
             this.activeTab = this.mainTabs[i].name

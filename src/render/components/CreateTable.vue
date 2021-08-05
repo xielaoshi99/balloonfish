@@ -44,7 +44,7 @@
   </el-card>
 </template>
 <script>
-  import { dataTypeOption } from '../utils/options'
+  import { dataTypeOption } from '../utils/funCommon'
   import { createTables, showSingleTable } from '../utils/taosrestful'
   export default {
     name: 'CreateTable',
