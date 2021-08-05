@@ -72,11 +72,20 @@
             this.sqlResult = data.data
             this.consoleResultLabel = Object.keys(data.data[0])
           } else {
-            this.$message({
-              message: data.msg,
-              type: 'error',
-              duration: 1000,
-            })
+            this.sqlResult = []
+            if (data.msg == 'Result set too large to be sorted') {
+              this.$message({
+                message: '数据量过大，请删去排序条件！',
+                type: 'error',
+                duration: 1000,
+              })
+            } else {
+              this.$message({
+                message: data.msg,
+                type: 'error',
+                duration: 1000,
+              })
+            }
           }
         })
       },

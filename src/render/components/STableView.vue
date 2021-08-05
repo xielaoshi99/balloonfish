@@ -1,19 +1,19 @@
 <template>
   <div>
     <!-- 超级表筛选 -->
-    <el-dialog :close-on-click-modal="false" :before-close="cancelSurperTableFilter" title="筛选条件" v-model="surperTableFilterDialog">
-      <el-form :model="surperTableFilter" label-width="80px">
+    <el-dialog :close-on-click-modal="false" :before-close="cancelsuperTableFilter" title="筛选条件" v-model="superTableFilterDialog">
+      <el-form :model="superTableFilter" label-width="80px">
         <el-form-item label="数据项">
-          <el-checkbox-group v-model="surperTableFilter.fields">
+          <el-checkbox-group v-model="superTableFilter.fields">
             <el-row class="checkboxGroup">
-              <el-col v-for="label in this.surperTableLabelItems" :key="label" :span="8">
+              <el-col v-for="label in this.superTableLabelItems" :key="label" :span="8">
                 <el-checkbox class="checkbox" :label="label">{{ label }}</el-checkbox>
               </el-col>
             </el-row>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="每页数目">
-          <el-radio-group v-model="eachPageSurperTable">
+          <el-radio-group v-model="eachPagesuperTable">
             <el-row class="checkboxGroup2">
               <el-radio :label="10">10</el-radio>
               <el-radio :label="15">15</el-radio>
@@ -21,17 +21,17 @@
             </el-row>
           </el-radio-group>
         </el-form-item>
-        <el-switch class="switchStyle" v-model="surperTorder" active-value="ASC" inactive-value="DESC" active-text="时间正序" inactive-text="时间倒序"></el-switch>
+        <el-switch class="switchStyle" v-model="superTorder" active-value="ASC" inactive-value="DESC" active-text="时间正序" inactive-text="时间倒序"></el-switch>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="cancelSurperTableFilter" size="small">取消</el-button>
-          <el-button @click="postSurperTableFilter" size="small">设置</el-button>
+          <el-button @click="cancelsuperTableFilter" size="small">取消</el-button>
+          <el-button @click="postsuperTableFilter" size="small">设置</el-button>
         </span>
       </template>
     </el-dialog>
     <!-- 超级表数据 -->
-    <el-row class="surperTSearchRow">
+    <el-row class="superTSearchRow">
       <el-col :span="3" class="dataPackerLabel">时间范围:</el-col>
       <el-col :span="13">
         <div class="datePickerWrapper">
@@ -39,7 +39,7 @@
             @change="getSTableData(false, true)"
             style="width: 100%"
             size="small"
-            v-model="surperTableFilter.surperDateRange"
+            v-model="superTableFilter.superDateRange"
             value-format="YYYY-MM-DD HH:mm:ss"
             type="datetimerange"
             range-separator="至"
@@ -49,19 +49,19 @@
         </div>
       </el-col>
       <el-col :span="4" class="freshDataBtn">
-        <el-button @click="openSurperTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">筛选条件</el-button>
+        <el-button @click="opensuperTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">筛选条件</el-button>
       </el-col>
       <el-col :span="4" class="freshDataBtn">
         <el-button @click="getSTableData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新</el-button>
       </el-col>
     </el-row>
-    <el-table size="mini" :data="surperTableData" border max-height="585" style="width: 100%">
-      <el-table-column fixed v-if="surperTableLabel[0]" :prop="surperTableLabel[0]" :label="surperTableLabel[0]" width="200"></el-table-column>
-      <el-table-column v-for="(data, index) in surperTableLabel.slice(1)" :key="index" :prop="data" :label="data" width="180" :render-header="renderHeader"></el-table-column>
+    <el-table size="mini" :data="superTableData" border max-height="585" style="width: 100%">
+      <el-table-column fixed v-if="superTableLabel[0]" :prop="superTableLabel[0]" :label="superTableLabel[0]" width="200"></el-table-column>
+      <el-table-column v-for="(data, index) in superTableLabel.slice(1)" :key="index" :prop="data" :label="data" width="180" :render-header="renderHeader"></el-table-column>
     </el-table>
     <!-- 超级表分页 -->
     <div class="paginationWrapper">
-      <el-pagination :hide-on-single-page="true" :current-page="currentPageSurperTable" @current-change="paginationSurperChange" :page-size="eachPageSurperTable" layout="prev, pager, next" :total="totalSurperTable"></el-pagination>
+      <el-pagination :hide-on-single-page="true" :current-page="currentPagesuperTable" @current-change="paginationsuperChange" :page-size="eachPagesuperTable" layout="prev, pager, next" :total="totalsuperTable"></el-pagination>
     </div>
   </div>
 </template>
@@ -77,65 +77,65 @@
     },
     data() {
       return {
-        surperTableData: [],
+        superTableData: [],
         tableTagName: [],
-        surperTableLabel: [],
-        surperTableLabelItems: [],
-        surperTableFilter: {
+        superTableLabel: [],
+        superTableLabelItems: [],
+        superTableFilter: {
           fields: [],
-          surperDateRange: [],
-          surperTSearchText: '',
-          surperTSearchColumn: '',
+          superDateRange: [],
+          superTSearchText: '',
+          superTSearchColumn: '',
         },
-        surperTorder: 'DESC',
-        surperTableFilterDialog: false,
-        surperWhere: '',
+        superTorder: 'DESC',
+        superTableFilterDialog: false,
+        superWhere: '',
         //分页相关
-        eachPageSurperTable: 10,
-        currentPageSurperTable: 1,
-        totalSurperTable: 0,
+        eachPagesuperTable: 10,
+        currentPagesuperTable: 1,
+        totalsuperTable: 0,
       }
     },
     created() {
       this.getSTableData(true, true)
     },
     methods: {
-      openSurperTableFilterD() {
-        this.surperTableFilterDialog = true
-        this.surperTableFilterCopy = JSON.parse(JSON.stringify(this.surperTableFilter))
+      opensuperTableFilterD() {
+        this.superTableFilterDialog = true
+        this.superTableFilterCopy = JSON.parse(JSON.stringify(this.superTableFilter))
       },
-      cancelSurperTableFilter() {
+      cancelsuperTableFilter() {
         this.$message({
           message: '取消操作',
           type: 'warning',
           duration: 1000,
         })
-        this.surperTableFilterDialog = false
-        this.surperTableFilter = this.surperTableFilterCopy
+        this.superTableFilterDialog = false
+        this.superTableFilter = this.superTableFilterCopy
       },
-      paginationSurperChange(page) {
-        this.currentPageSurperTable = page
+      paginationsuperChange(page) {
+        this.currentPagesuperTable = page
         this.getSTableData(false)
       },
-      postSurperTableFilter() {
-        this.surperTableFilterDialog = false
+      postsuperTableFilter() {
+        this.superTableFilterDialog = false
         this.getSTableData(false, true)
       },
       getSTableData(isFirst, isResetPage) {
         //处理时间范围
         let startTime = null
         let endTime = null
-        if (this.surperTableFilter.surperDateRange) {
-          startTime = this.surperTableFilter.surperDateRange[0]
-          endTime = this.surperTableFilter.surperDateRange[1]
+        if (this.superTableFilter.superDateRange) {
+          startTime = this.superTableFilter.superDateRange[0]
+          endTime = this.superTableFilter.superDateRange[1]
         }
         //是否需要重置分页
         if (isResetPage) {
-          this.currentPageSurperTable = 1
+          this.currentPagesuperTable = 1
         }
-        let offsetVal = (this.currentPageSurperTable - 1) * this.eachPageSurperTable
+        let offsetVal = (this.currentPagesuperTable - 1) * this.eachPagesuperTable
         if (this.table) {
-          selectData(this.table.name, this.dbname, this.link, this.surperTableFilter.fields, this.surperWhere, this.eachPageSurperTable, offsetVal, this.surperTorder, startTime, endTime).then((data) => {
+          selectData(this.table.name, this.dbname, this.link, this.superTableFilter.fields, this.superWhere, this.eachPagesuperTable, offsetVal, this.superTorder, startTime, endTime).then((data) => {
             if (data.res) {
               let tableDescribe = data.describe
               for (let i = 0; i < tableDescribe.length; i++) {
@@ -147,17 +147,17 @@
               if (data.data.length != 0) {
                 //有数据
                 if (isFirst) {
-                  this.surperTableLabelItems = Object.keys(data.data[0])
+                  this.superTableLabelItems = Object.keys(data.data[0])
                   this.$message({
                     message: '获取成功',
                     type: 'success',
                     duration: 1000,
                   })
                 }
-                this.surperTableLabel = Object.keys(data.data[0])
-                this.surperTableFilter.fields = Object.keys(data.data[0])
-                this.surperTableData = data.data
-                this.totalSurperTable = data.count
+                this.superTableLabel = Object.keys(data.data[0])
+                this.superTableFilter.fields = Object.keys(data.data[0])
+                this.superTableData = data.data
+                this.totalsuperTable = data.count
               } else {
                 this.$message({
                   message: '无数据',
@@ -166,11 +166,24 @@
                 })
               }
             } else {
-              this.$message({
-                message: data.msg,
-                type: 'error',
-                duration: 1000,
-              })
+              if (data.msg == 'Result set too large to be sorted') {
+                this.$confirm('数据量过大，由于TDengine限制只能进行时间正向排序，是否切换为时间正向排序？', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning',
+                })
+                  .then(() => {
+                    this.superTorder = 'ASC'
+                    this.getSTableData(false, true)
+                  })
+                  .catch(() => {})
+              } else {
+                this.$message({
+                  message: data.msg,
+                  type: 'error',
+                  duration: 1000,
+                })
+              }
             }
           })
         }

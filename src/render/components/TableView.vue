@@ -21,7 +21,7 @@
             </el-row>
           </el-radio-group>
         </el-form-item>
-        <el-switch class="switchStyle" v-model="surperTorder" active-value="ASC" inactive-value="DESC" active-text="时间正序" inactive-text="时间倒序"></el-switch>
+        <el-switch class="switchStyle" v-model="superTorder" active-value="ASC" inactive-value="DESC" active-text="时间正序" inactive-text="时间倒序"></el-switch>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -31,7 +31,7 @@
       </template>
     </el-dialog>
     <!-- 超级表数据 -->
-    <el-row class="surperTSearchRow">
+    <el-row class="superTSearchRow">
       <el-col :span="2" class="dataPackerLabel">时间范围:</el-col>
       <el-col :span="10">
         <div class="datePickerWrapper">
@@ -39,7 +39,7 @@
             @change="getTableData(false, true)"
             style="width: 100%"
             size="small"
-            v-model="tableFilter.surperDateRange"
+            v-model="tableFilter.superDateRange"
             value-format="YYYY-MM-DD HH:mm:ss"
             type="datetimerange"
             range-separator="至"
@@ -55,7 +55,7 @@
         <el-button @click="getTableData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新</el-button>
       </el-col>
     </el-row>
-    <el-row class="surperTSearchRow">
+    <el-row class="superTSearchRow">
       <el-col :span="5" class="dataPackerLabel">所属超级表：{{ table.stable_name }}</el-col>
       <el-col :span="2" class="dataPackerLabel">标签信息:</el-col>
       <el-col :span="17">
@@ -98,13 +98,13 @@
         tableTags: {},
         tableFilter: {
           fields: [],
-          surperDateRange: [],
-          surperTSearchText: '',
-          surperTSearchColumn: '',
+          superDateRange: [],
+          superTSearchText: '',
+          superTSearchColumn: '',
         },
-        surperTorder: 'DESC',
+        superTorder: 'DESC',
         tableFilterDialog: false,
-        surperWhere: '',
+        superWhere: '',
         //分页相关
         eachPageTable: 10,
         currentPageTable: 1,
@@ -119,7 +119,7 @@
     methods: {
       openTableFilterD() {
         this.tableFilterDialog = true
-        this.surperTableFilterCopy = JSON.parse(JSON.stringify(this.tableFilter))
+        this.superTableFilterCopy = JSON.parse(JSON.stringify(this.tableFilter))
       },
       cancelTableFilter() {
         this.$message({
@@ -128,7 +128,7 @@
           duration: 1000,
         })
         this.tableFilterDialog = false
-        this.tableFilter = this.surperTableFilterCopy
+        this.tableFilter = this.superTableFilterCopy
       },
       paginationChange(page) {
         this.currentPageTable = page
@@ -142,9 +142,9 @@
         //处理时间范围
         let startTime = null
         let endTime = null
-        if (this.tableFilter.surperDateRange) {
-          startTime = this.tableFilter.surperDateRange[0]
-          endTime = this.tableFilter.surperDateRange[1]
+        if (this.tableFilter.superDateRange) {
+          startTime = this.tableFilter.superDateRange[0]
+          endTime = this.tableFilter.superDateRange[1]
         }
         //是否需要重置分页
         if (isResetPage) {
@@ -152,7 +152,7 @@
         }
         let offsetVal = (this.currentPageTable - 1) * this.eachPageTable
         if (this.table.table_name) {
-          selectData(this.table.table_name, this.dbname, this.link, this.tableFilter.fields, this.surperWhere, this.eachPageTable, offsetVal, this.surperTorder, startTime, endTime).then((data) => {
+          selectData(this.table.table_name, this.dbname, this.link, this.tableFilter.fields, this.superWhere, this.eachPageTable, offsetVal, this.superTorder, startTime, endTime).then((data) => {
             if (data.res) {
               let tableDescribe = data.describe
               let tableTagName = []
