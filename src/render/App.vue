@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-aside class="linksMenu">
-      <LinkAside @tableChanged="tableChanged" @addTabMain="addTabMain" @linkChanged="linkChanged"></LinkAside>
+      <LinkAside ref="linkAside" @tableChanged="tableChanged" @addTabMain="addTabMain" @linkChanged="linkChanged" @postMessage="receiveMessage"></LinkAside>
     </el-aside>
     <el-main class="main">
       <el-tabs v-model="activeTab" type="card" closable @tab-remove="removeTab">
@@ -10,7 +10,7 @@
             <i :class="item.icon"></i>
             <span>{{ item.title }}</span>
           </template>
-          <component :is="item.content" :table="item.table" :dbname="selectedDB.name" :link="item.link" />
+          <component :is="item.content" :table="item.table" :dbname="selectedDB.name" :link="item.link" @postMessage="receiveMessage"></component>
         </el-tab-pane>
       </el-tabs>
     </el-main>
@@ -112,6 +112,50 @@
       },
       linkChanged(link) {
         this.theLink = link
+      },
+      receiveMessage(mesType, mes) {
+        switch (mesType) {
+          case 'tablecreated':
+            this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].TableData[0].children.push(mes)
+            this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].tableList.push(mes)
+            break
+          case 'stablecreated':
+            this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-stable'].superTableData[0].children.push(mes)
+            break
+          case 'tabledeleted':
+            let beforeDelTableAll = this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].tableList
+            if (beforeDelTableAll.length > 10) {
+              let beforeDelTable = this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].TableData[0].children
+              for (let i = 0; i < beforeDelTable.length; i++) {
+                if (beforeDelTable[i].table_name == mes) {
+                  this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].TableData[0].children.splice(i, 1)
+                  break
+                }
+              }
+              for (let i = 0; i < beforeDelTableAll.length; i++) {
+                if (beforeDelTableAll[i].table_name == mes) {
+                  this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].tableList.splice(i, 1)
+                  break
+                }
+              }
+            } else {
+              let beforeDelTable = this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].TableData[0].children
+              for (let i = 0; i < beforeDelTable.length; i++) {
+                if (beforeDelTable[i].table_name == mes) {
+                  this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].TableData[0].children.splice(i, 1)
+                  break
+                }
+              }
+            }
+          case 'stabledeleted':
+            let beforeDelSTable = this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-stable'].superTableData[0].children
+            for (let i = 0; i < beforeDelSTable.length; i++) {
+              if (beforeDelSTable[i].name == mes) {
+                this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-stable'].superTableData[0].children.splice(i, 1)
+                break
+              }
+            }
+        }
       },
     },
   }

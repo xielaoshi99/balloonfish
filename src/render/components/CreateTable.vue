@@ -45,7 +45,7 @@
 </template>
 <script>
   import { dataTypeOption } from '../utils/options'
-  import { createTables } from '../utils/taosrestful'
+  import { createTables, showSingleTable } from '../utils/taosrestful'
   export default {
     name: 'CreateTable',
     props: {
@@ -111,9 +111,12 @@
             }
             createTables(this.table.name, payload, this.columnData, value).then((data) => {
               if (data.res == true) {
-                this.$message({
-                  type: 'success',
-                  message: '表' + value + '创建成功！',
+                showSingleTable(this.table.name, value, payload).then((singleTable) => {
+                  this.$emit('postMessage', 'tablecreated', singleTable.data[0]) //传出添加表成功的数据
+                  this.$message({
+                    type: 'success',
+                    message: '表' + value + '创建成功！',
+                  })
                 })
               } else {
                 this.$message({

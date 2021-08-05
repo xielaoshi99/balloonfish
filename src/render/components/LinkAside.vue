@@ -70,6 +70,7 @@
               <div>
                 <STableTree
                   :db="props.row"
+                  :ref="props.row.name + '-stable'"
                   :link="link"
                   @addTab="addTab"
                   @tableChanged="tableChanged"
@@ -81,6 +82,7 @@
                 ></STableTree>
                 <TableTree
                   :db="props.row"
+                  :ref="props.row.name + '-table'"
                   :link="link"
                   @addTab="addTab"
                   @tableChanged="tableChanged"
@@ -120,7 +122,7 @@
     },
     props: {},
     // 定义抛出的事件名称
-    emits: ['tableChanged', 'addTabMain', 'linkChanged'],
+    emits: ['tableChanged', 'addTabMain', 'linkChanged', 'postMessage'],
 
     data() {
       return {
@@ -377,6 +379,9 @@
       },
       rowClass() {
         return 'dbCol'
+      },
+      postMessageToMain(mesType, mes) {
+        this.$emit('postMessage', mesType,mes) //传出添加表成功的数据
       },
       rightClick(row, column, event, type, linkKey, father) {
         this.linkKey = linkKey

@@ -291,6 +291,7 @@
           }
           let stAndTagName = {
             stname: this.templateStable,
+            dbname: this.db.name,
             tableTagName: [],
           }
           disTable(this.templateStable, this.db.name, payload).then((data) => {
@@ -375,6 +376,7 @@
             }
             dropTable(this.table.name, dbInfo.name, payload).then((data) => {
               if (data.res) {
+                this.$parent.postMessageToMain('stabledeleted', this.table.name)
                 this.$message({
                   type: 'success',
                   message: '删除成功!',
@@ -413,6 +415,7 @@
             }
             dropTable(this.table.table_name, dbInfo.name, payload).then((data) => {
               if (data.res) {
+                this.$parent.postMessageToMain('tabledeleted', this.table.table_name)
                 this.$message({
                   type: 'success',
                   message: '删除成功!',

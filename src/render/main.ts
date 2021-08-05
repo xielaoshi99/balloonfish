@@ -2,7 +2,6 @@ import '@src/common/patch'
 import { createApp } from 'vue'
 import App from './App.vue'
 import ElementPlus from 'element-plus'
-import fs = require('fs')
 import 'element-plus/lib/theme-chalk/index.css'
 import { ipcRenderer } from 'electron'
 import Store from 'electron-store'

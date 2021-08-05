@@ -67,10 +67,8 @@
           user: this.link.user,
           password: this.link.password,
         }
-        console.log(this.code)
         rawSqlWithDB(this.code, this.table.name, payload).then((data) => {
           if (data.res == true) {
-            console.log(data.data)
             this.sqlResult = data.data
             this.consoleResultLabel = Object.keys(data.data[0])
           } else {

@@ -3,7 +3,7 @@
     <template #header>
       <div class="card-header">
         <i class="fa fa-database"></i>
-        <span>{{ ' 数据库：' + dbname }}</span>
+        <span>{{ ' 数据库：' + table.dbname }}</span>
         <i class="fa fa-sitemap" style="margin-left: 20px"></i>
         <span>{{ ' 超级表：' + table.stname }}</span>
       </div>
@@ -24,21 +24,21 @@
   </el-card>
 </template>
 <script>
-  import { createTablesWithTemp } from '../utils/taosrestful'
+  import { createTablesWithTemp, showSingleTable } from '../utils/taosrestful'
   export default {
     name: 'CreateTableWithTemp',
     props: {
-      table: Object, //这里的table，实际上是数据库和tag组成的对象
-      dbname: String, //数据库名
+      table: Object, //这里的table，实际上是数据库名、超级表名和tag组成的对象
+      dbname: String, //无用
       link: Object,
     },
+    emits: ['postMessage'],
     data() {
       return {
         columnData: [],
       }
     },
     created() {
-      console.log(this.table.tableTagName)
       for (let i = 0; i < this.table.tableTagName.length; i++) {
         this.columnData.push({
           tagName: this.table.tableTagName[i].name,
@@ -73,12 +73,15 @@
               user: this.link.user,
               password: this.link.password,
             }
-            createTablesWithTemp(this.dbname, payload, this.columnData, value, this.table.stname).then((data) => {
-              console.log(data)
+            createTablesWithTemp(this.table.dbname, payload, this.columnData, value, this.table.stname).then((data) => {
               if (data.res == true) {
-                this.$message({
-                  type: 'success',
-                  message: '表' + value + '创建成功！',
+                showSingleTable(this.table.dbname, value, payload).then((singleTable) => {
+                  console.log(singleTable)
+                  this.$emit('postMessage', 'tablecreated', singleTable.data[0]) //传出添加表成功的数据
+                  this.$message({
+                    type: 'success',
+                    message: '表' + value + '创建成功！',
+                  })
                 })
               } else {
                 this.$message({

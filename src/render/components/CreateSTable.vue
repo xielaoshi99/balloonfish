@@ -50,7 +50,7 @@
 </template>
 <script>
   import { dataTypeOption } from '../utils/options'
-  import { createSuperTables } from '../utils/taosrestful'
+  import { createSuperTables, showSingleSuperTable } from '../utils/taosrestful'
   export default {
     name: 'CreateSTable',
     props: {
@@ -119,9 +119,12 @@
             }
             createSuperTables(this.table.name, payload, this.columnData, this.TagData, value).then((data) => {
               if (data.res == true) {
-                this.$message({
-                  type: 'success',
-                  message: '超级表' + value + '创建成功！',
+                showSingleSuperTable(this.table.name, value, payload).then((singleSTable) => {
+                  this.$emit('postMessage', 'stablecreated', singleSTable.data[0]) //传出添加表成功的数据
+                  this.$message({
+                    type: 'success',
+                    message: '表' + value + '创建成功！',
+                  })
                 })
               } else {
                 this.$message({

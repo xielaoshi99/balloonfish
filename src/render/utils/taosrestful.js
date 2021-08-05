@@ -109,6 +109,9 @@ export function showSuperTables(dbName, payload, like = null) {
   let likeStr = like ? ` LIKE '%${like}%'` : ''
   return sendRequest(`SHOW ${dbName}.STABLES  ${likeStr}`, payload)
 }
+export function showSingleSuperTable(dbName, superTableName, payload) {
+  return sendRequest(`SHOW ${dbName}.STABLES LIKE ${superTableName}`, payload)
+}
 export function createSuperTables(dbName, payload, colArray, tagArray, superTableName) {
   let colStr = ''
   let tagStr = ''
@@ -123,7 +126,6 @@ export function createSuperTables(dbName, payload, colArray, tagArray, superTabl
   colStr = colStr.slice(0, colStr.length - 1)
   tagStr = tagStr.slice(0, tagStr.length - 1)
   let sql = `CREATE STABLE ${superTableName} (${colStr}) TAGS (${tagStr})`
-  console.log(sql)
   return sendRequest(`USE ${dbName}`, payload).then((a) => {
     return sendRequest(sql, payload)
   })
@@ -143,6 +145,9 @@ export function showTables(dbName, payload, like = null) {
   let likeStr = like ? ` LIKE '%${like}%'` : ''
   return sendRequest(`SHOW ${dbName}.TABLES ${likeStr}`, payload)
 }
+export function showSingleTable(dbName, tableName, payload) {
+  return sendRequest(`SHOW ${dbName}.TABLES LIKE ${tableName}`, payload)
+}
 export function createTablesWithTemp(dbName, payload, tagArray, tableName, superTableName) {
   let tagStr = ''
   for (let i = 0; i < tagArray.length; i++) {
@@ -150,7 +155,6 @@ export function createTablesWithTemp(dbName, payload, tagArray, tableName, super
   }
   tagStr = tagStr.slice(0, tagStr.length - 1)
   let sql = `CREATE TABLE ${tableName} USING ${superTableName} TAGS (${tagStr});`
-  console.log(sql)
   return sendRequest(`USE ${dbName}`, payload).then((a) => {
     return sendRequest(sql, payload)
   })
