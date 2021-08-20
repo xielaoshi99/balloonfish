@@ -160,7 +160,9 @@ export function createTablesWithTemp(dbName, payload, tagArray, tableName, super
   })
 }
 export function disTable(tableName, dbName, payload) {
-  return sendRequest(`DESCRIBE ${dbName}.${tableName}`, payload)
+  return sendRequest(`reset query cache`, payload).then((a) => {
+    return sendRequest(`DESCRIBE ${dbName}.${tableName}`, payload)
+  })
 }
 export function dropTable(tableName, dbName, payload, safe = false) {
   return sendRequest(`DROP TABLE ${safe ? 'IF EXISTS' : ''} ${dbName}.${tableName}`, payload)

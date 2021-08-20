@@ -20,8 +20,8 @@ function createWin() {
       preload: join(__dirname, '../preload/index.js'),
     },
   })
-  win.webContents.openDevTools()
-  //Menu.setApplicationMenu(null) //隐藏菜单栏
+  //win.webContents.openDevTools()
+  Menu.setApplicationMenu(null) //隐藏菜单栏
   const URL = app.isPackaged
     ? `file://${join(__dirname, '../render/index.html')}` // vite 构建后的静态文件地址
     : `http://localhost:${process.env.PORT}` // vite 启动的服务器地址
