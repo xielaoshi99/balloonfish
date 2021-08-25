@@ -22,11 +22,11 @@
           </template>
           <div class="softInfo">
             <img src="../assets/icon.png" width="200" />
-            <p>BalloonFish（河豚）版本：0.5.7-dev</p>
+            <p>BalloonFish（河豚）版本：0.6.2-dev</p>
             <p>一款基于electron+vue3+vite2.0的TDengine时序库可视化管理工具</p>
             <p>By xielaoshi</p>
             <el-button type="text" @click="viewLib">查看组件版本</el-button>
-            <el-button type="text" @click="gobaidu">项目源码</el-button>
+            <el-button type="text" @click="source">项目源码</el-button>
             <el-button type="text" @click="gobaidu">检查更新</el-button>
           </div>
         </el-card>
@@ -96,8 +96,12 @@
         })
       },
       gobaidu() {
-        const shell = electron.shell
+        let shell = electron.shell
         shell.openExternal('http://www.baidu.com')
+      },
+      source() {
+        let shell = electron.shell
+        shell.openExternal('https://gitee.com/xielaoshi99/balloonfish')
       },
     },
   }

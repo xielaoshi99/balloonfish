@@ -73,7 +73,6 @@
     created() {
       this.privilegeO = privilegeOption
       getUsers(this.link).then((data) => {
-        console.log(data)
         this.userData = data.data
       })
     },
@@ -103,13 +102,12 @@
           .then(() => {
             for (let i = 0; i < this.selectedUsers.length; i++) {
               delUsers(this.selectedUsers[i].name, this.link).then((res) => {
-                console.log(res)
+                this.$message.success('所选用户删除成功！')
+                getUsers(this.link).then((data) => {
+                  this.userData = data.data
+                })
               })
             }
-            this.$message.success('所选用户删除成功！')
-            getUsers(this.link).then((data) => {
-              this.userData = data.data
-            })
           })
           .catch(() => {
             this.$message({

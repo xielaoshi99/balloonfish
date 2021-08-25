@@ -76,7 +76,6 @@
             createTablesWithTemp(this.table.dbname, payload, this.columnData, value, this.table.stname).then((data) => {
               if (data.res == true) {
                 showSingleTable(this.table.dbname, value, payload).then((singleTable) => {
-                  console.log(singleTable)
                   this.$emit('postMessage', 'tablecreated', singleTable.data[0]) //传出添加表成功的数据
                   this.$message({
                     type: 'success',
