@@ -145,9 +145,9 @@
         rightPanelDB: {},
       }
     },
-    mounted: function () {
+    created: function () {
       let links = getLinks()
-      for (let i = 0, len = links.length; i < len; i++) {
+      for (let i = 0; i < links.length; i++) {
         let payload = {
           host: links[i].host,
           port: links[i].port,
@@ -156,9 +156,9 @@
         }
         getVersion(payload).then((data) => {
           links[i].version = data
-          this.$data.links = links
         })
       }
+      this.links = links
     },
     methods: {
       cancelAddLink() {
