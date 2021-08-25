@@ -29,13 +29,25 @@
 yarn install
 ```
 
-### 运行
+### 运行WEB版
+
+```
+yarn vue
+```
+
+### 运行桌面版
 
 ```
 yarn start
 ```
 
-### 编译打包
+### 编译打包Web版本
+
+```
+yarn build:vue
+```
+
+### 编译打包桌面版
 
 ```
 yarn build

@@ -37,7 +37,7 @@
 
 <script>
   import axios from 'axios'
-  import electron from 'electron'
+
   export default {
     name: 'Welcome',
     props: {
@@ -96,12 +96,22 @@
         })
       },
       gobaidu() {
-        let shell = electron.shell
-        shell.openExternal('http://www.baidu.com')
+        let flag = window && window.process && window.process.versions && window.process.versions['electron']
+        if (flag) {
+          const { shell } = require('electron')
+          shell.openExternal('http://www.baidu.com')
+        } else {
+          window.open('http://www.baidu.com')
+        }
       },
       source() {
-        let shell = electron.shell
-        shell.openExternal('https://gitee.com/xielaoshi99/balloonfish')
+        let flag = window && window.process && window.process.versions && window.process.versions['electron']
+        if (flag) {
+          const { shell } = require('electron')
+          shell.openExternal('https://gitee.com/xielaoshi99/balloonfish')
+        } else {
+          window.open('https://gitee.com/xielaoshi99/balloonfish')
+        }
       },
     },
   }
