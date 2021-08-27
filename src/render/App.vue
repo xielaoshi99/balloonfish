@@ -122,7 +122,6 @@
               this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].tableList.push(mes)
             }
             this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-table'].TableData[0].children.push(mes)
-
             break
           case 'stablecreated':
             this.$refs.linkAside.$refs[this.$refs.linkAside.dbInfo.name + '-stable'].superTableData[0].children.push(mes)
