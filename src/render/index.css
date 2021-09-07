@@ -231,7 +231,7 @@ el-footer {
 }
 .customer-no-border-table td,
 .customer-no-border-table th.is-leaf {
-  border: none;
+  border: none !important;
 }
 /*表格最外边框*/
 .customer-no-border-table .el-table--border,

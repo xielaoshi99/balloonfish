@@ -57,10 +57,10 @@
   "dependencies": {
     "axios": "^0.21.1",
     "codemirror": "^5.62.2",
-    "element-plus": "^1.0.2-beta.63",
+    "element-plus": "^1.1.0-beta.9",
     "font-awesome": "^4.7.0",
     "rollup": "^2.55.1",
-    "vue": "^3.1.5",
+    "vue": "^3.2.9",
     "vxe-table": "^4.0.24",
     "xe-utils": "^3.3.1"
   },
@@ -92,6 +92,6 @@
     "vite",
     "electron",
     "vue3",
-    "rollup"
+    "tdengine"
   ]
 }

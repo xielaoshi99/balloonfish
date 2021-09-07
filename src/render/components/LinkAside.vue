@@ -35,7 +35,7 @@
   <ContextMenu :menuVisible="menuVisible" :type="rightPanelType" :db="rightPanelDB" :links="links" :linkKey="linkKey" @addTab="addTab" @tableChanged="tableChanged" :table="rightTable"></ContextMenu>
   <div v-loading="loadingLinks">
     <el-menu @open="freshDB($event, false)" :unique-opened="false" class="menus">
-      <el-submenu :index="String(index)" :key="index" v-for="(link, index) in links">
+      <el-sub-menu :index="String(index)" :key="index" v-for="(link, index) in links">
         <template #title>
           <span>{{ link.name }}</span>
           <el-tag type="success" size="mini" v-if="link.version">
@@ -102,7 +102,7 @@
             </template>
           </el-table-column>
         </el-table>
-      </el-submenu>
+      </el-sub-menu>
     </el-menu>
   </div>
 </template>
@@ -469,7 +469,7 @@
     right: 25px;
     top: -2px;
   }
-  .el-submenu__icon-arrow {
+  .el-sub-menu__icon-arrow {
     right: 10px !important;
   }
 </style>
