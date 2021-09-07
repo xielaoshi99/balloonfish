@@ -21,36 +21,34 @@
 
 ## how to run and build
 
-请忘记npm，使用yarn！！！！！
-
 ### 安装依赖
 
 ```
-yarn install
+npm install
 ```
 
 ### 运行WEB版
 
 ```
-yarn vue
+npm run vue
 ```
 
 ### 运行桌面版
 
 ```
-yarn start
+npm start
 ```
 
 ### 编译打包Web版本
 
 ```
-yarn build:vue
+npm run build:vue
 ```
 
 ### 编译打包桌面版
 
 ```
-yarn build
+npm run build
 ```
 
 网页版编译后位于 `dist` 文件夹，需要挂服务才能运行，桌面版编译后位于 `release` 文件夹
