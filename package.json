@@ -1,6 +1,6 @@
 {
   "name": "balloonfish",
-  "version": "0.7.2",
+  "version": "0.7.0",
   "main": "dist/main/index.js",
   "author": "xielaoshi",
   "license": "MIT",
@@ -32,6 +32,7 @@
       ]
     },
     "win": {
+      "icon": "/src/render/public/favicon.ico",
       "target": [
         {
           "target": "nsis",

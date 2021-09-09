@@ -6,6 +6,8 @@ let win: BrowserWindow | null = null
 
 function bootstrap() {
   win = new BrowserWindow({
+    width: 1200,
+    height: 735,
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
     },
@@ -14,7 +16,6 @@ function bootstrap() {
   if (app.isPackaged) {
     win.loadFile(path.join(__dirname, '../render/index.html'))
   } else {
-    win.maximize()
     win.webContents.openDevTools()
     win.loadURL(`http://localhost:${process.env.PORT}`)
   }
