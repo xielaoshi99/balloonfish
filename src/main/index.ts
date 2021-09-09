@@ -1,32 +1,31 @@
-/**
- * electron 主文件
- */
-import { join } from 'path'
-import { app, BrowserWindow, shell, Menu } from 'electron'
-import dotenv from 'dotenv'
+import path from 'path'
+import { app, BrowserWindow } from 'electron'
+import { register } from './communication'
 
-dotenv.config({ path: join(__dirname, '../../.env') })
+let win: BrowserWindow | null = null
 
-let win: BrowserWindow
-
-function createWin() {
-  // 创建浏览器窗口
+function bootstrap() {
   win = new BrowserWindow({
-    width: 1200,
-    height: 735,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      preload: join(__dirname, '../preload/index.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
     },
   })
-  //win.webContents.openDevTools()
-  Menu.setApplicationMenu(null) //隐藏菜单栏
-  const URL = app.isPackaged
-    ? `file://${join(__dirname, '../render/index.html')}` // vite 构建后的静态文件地址
-    : `http://localhost:${process.env.PORT}` // vite 启动的服务器地址
 
-  win?.loadURL(URL)
+  if (app.isPackaged) {
+    win.loadFile(path.join(__dirname, '../render/index.html'))
+  } else {
+    win.maximize()
+    win.webContents.openDevTools()
+    win.loadURL(`http://localhost:${process.env.PORT}`)
+  }
+
+  // something init setup
+  register(win)
 }
 
-app.whenReady().then(createWin)
+app.whenReady().then(bootstrap)
+
+app.on('window-all-closed', () => {
+  win = null
+  app.quit()
+})

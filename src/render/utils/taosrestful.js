@@ -257,7 +257,6 @@ export function countDataIn(tableName, dbName, primaryKey, payload, where = '', 
   if (where) {
     sqlStr += ` WHERE ${where} `
   }
-  // console.log(sqlStr)
   return sendRequest(sqlStr, payload).then((result) => {
     if (result.res && result.data.length > 0) {
       return new Promise((resolve, reject) => {
@@ -306,7 +305,6 @@ export function rawSql(sqlStr, payload) {
   return sendRequest(sqlStr, payload)
 }
 export function rawSqlWithDB(sqlStr, dbName, payload) {
-  // let dbN = dbName ? dbName : database
   return sendRequest(`USE ${dbName}`, payload).then((a) => {
     return sendRequest(sqlStr, payload)
   })
