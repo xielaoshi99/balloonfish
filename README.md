@@ -30,7 +30,7 @@ npm install
 ### 运行WEB版
 
 ```
-npm run vue
+npm run web
 ```
 
 ### 运行桌面版
@@ -42,7 +42,7 @@ npm start
 ### 编译打包Web版本
 
 ```
-npm run build:vue
+npm run build:web
 ```
 
 ### 编译打包桌面版

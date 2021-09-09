@@ -5,15 +5,14 @@
   "author": "xielaoshi",
   "license": "MIT",
   "scripts": {
-    "dev": "concurrently -n=R,P,M -c=green,yellow,blue \"npm run dev:render\" \"npm run dev:preload\" \"npm run dev:main\"",
-    "dev:render": "vite",
+    "start": "concurrently -n=R,P,M -c=green,yellow,blue \"npm run web\" \"npm run dev:preload\" \"npm run dev:main\"",
+    "web": "vite",
     "dev:preload": "node -r ts-node/register script/build-preload --env=development --watch",
     "dev:main": "node -r ts-node/register script/build-main --env=development --watch",
-    "//": "---------------------------------------------------------------------------------------------------",
-    "build:render": "vite build",
+    "build:web": "vite build",
     "build:preload": "node -r ts-node/register script/build-preload --env=production",
     "build:main": "node -r ts-node/register script/build-main --env=production",
-    "build": "rimraf dist && npm run build:render && npm run build:preload && npm run build:main && electron-builder"
+    "build": "rimraf dist && npm run build:web && npm run build:preload && npm run build:main && electron-builder"
   },
   "build": {
     "appId": "com.tcdri.xielaoshi.balloonfish",
