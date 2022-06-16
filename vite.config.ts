@@ -7,7 +7,7 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig((env) => {
   return {
     plugins: [vue()],
-    root: join(__dirname, 'src/rendernaive'),
+    root: join(__dirname, 'src/render'),
     base: './',
     server: {
       port: +process.env.PORT,
@@ -19,7 +19,7 @@ export default defineConfig((env) => {
       },
     },
     build: {
-      outDir: join(__dirname, 'dist/rendernaive'),
+      outDir: join(__dirname, 'dist/render'),
       emptyOutDir: true,
       minify: false,
       commonjsOptions: {},

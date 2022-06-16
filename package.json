@@ -31,7 +31,7 @@
       ]
     },
     "win": {
-      "icon": "/src/rendernaive/public/favicon.ico",
+      "icon": "/src/render/public/favicon.ico",
       "target": [
         {
           "target": "nsis",
@@ -74,6 +74,7 @@
     "electron": "^14.0.0",
     "electron-builder": "^22.10.5",
     "minimist": "^1.2.5",
+    "naive-ui": "^2.30.4",
     "ora": "^5.4.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.2.1",
