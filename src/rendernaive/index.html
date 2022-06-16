@@ -1,68 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BalloonFish</title>
+    <style>
+      @font-face {
+        font-family: 'Harmony';
+        src: url(./Harmony.ttf);
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BalloonFish</title>
-  <style>
-    @font-face {
-      font-family: 'Harmony';
-      src: url(./Harmony.ttf);
-    }
+      html,
+      body,
+      #app {
+        font-family: 'Harmony' !important;
+        margin: 0;
+        height: 100%;
+      }
 
-    .el-button {
-      font-family: 'Harmony' !important;
-    }
+      ::-webkit-scrollbar {
+        width: 8px;
 
-    .el-sub-menu__title {
-      padding-left: 0px !important;
-    }
+        height: 8px;
+      }
 
-    html {
-      font-family: 'Harmony' !important;
-    }
+      ::-webkit-scrollbar-thumb {
+        border-radius: 14px;
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: #dddddd;
+      }
 
-    body {
-      margin: 0;
-      font-family: 'Harmony' !important;
-    }
+      ::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        border-radius: 0;
+        background: none;
+      }
+    </style>
+  </head>
 
-    .el-aside {
-      border: 0 !important;
-    }
-
-    .el-table__expanded-cell[class*='cell'] {
-      padding-top: 5px !important;
-      padding-left: 20px !important;
-      padding-bottom: 5px !important;
-      padding-right: 2px !important;
-    }
-
-    ::-webkit-scrollbar {
-      width: 8px;
-
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      border-radius: 14px;
-      -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-      background: #dddddd;
-    }
-
-    ::-webkit-scrollbar-track {
-      -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-      border-radius: 0;
-      background: none;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="app"></div>
-  <script type="module" src="/main.ts"></script>
-</body>
-
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/main.ts"></script>
+  </body>
 </html>

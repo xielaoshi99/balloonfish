@@ -14,7 +14,7 @@ function bootstrap() {
   })
 
   if (app.isPackaged) {
-    win.loadFile(path.join(__dirname, '../render/index.html'))
+    win.loadFile(path.join(__dirname, '../rendernaive/index.html'))
   } else {
     win.webContents.openDevTools()
     win.loadURL(`http://localhost:${process.env.PORT}`)
