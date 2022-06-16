@@ -10,11 +10,11 @@ import { builtins, getEnv } from './utils'
 
 export interface ConfigOptions {
   env?: typeof process.env.NODE_ENV
-  proc: 'main' | 'render' | 'preload'
+  proc: 'main' | 'rendernaive' | 'preload'
 }
 
 export default function (opts: ConfigOptions) {
-  const sourcemap = opts.proc === 'render'
+  const sourcemap = opts.proc === 'rendernaive'
   const options: RollupOptions = {
     input: path.join(__dirname, `../src/${opts.proc}/index.ts`),
     output: {
@@ -39,20 +39,12 @@ export default function (opts: ConfigOptions) {
         },
       }),
       replace({
-        ...Object
-          .entries({ ...getEnv(), NODE_ENV: opts.env })
-          .reduce(
-            (acc, [k, v]) => Object.assign(acc, { [`process.env.${k}`]: JSON.stringify(v) }),
-            {},
-          ),
+        ...Object.entries({ ...getEnv(), NODE_ENV: opts.env }).reduce((acc, [k, v]) => Object.assign(acc, { [`process.env.${k}`]: JSON.stringify(v) }), {}),
         preventAssignment: true,
       }),
     ],
-    external: [
-      ...builtins(),
-      'electron',
-    ],
-    onwarn: warning => {
+    external: [...builtins(), 'electron'],
+    onwarn: (warning) => {
       // https://github.com/rollup/rollup/issues/1089#issuecomment-365395213
       if (warning.code !== 'CIRCULAR_DEPENDENCY') {
         console.error(`(!) ${warning.message}`)

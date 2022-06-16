@@ -31,7 +31,7 @@
       ]
     },
     "win": {
-      "icon": "/src/render/public/favicon.ico",
+      "icon": "/src/rendernaive/public/favicon.ico",
       "target": [
         {
           "target": "nsis",
