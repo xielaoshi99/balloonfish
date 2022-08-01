@@ -1,74 +1,41 @@
-<template>
-  <el-tree
-    :data="superTableData"
-    @node-click="superTableNodeClick"
-    @node-contextmenu="
-      (event, nodedata, node) => {
-        rightClick(node, nodedata, event, 'stable')
-      }
-    "
-  >
-    <template v-slot="{ data }">
-      <span>
-        <i :class="data.icon"></i>
-        {{ data.name }}
-      </span>
-    </template>
-  </el-tree>
-</template>
-<script>
+<script setup>
+  import { h, ref, onMounted } from 'vue'
   import { showSuperTables } from '../utils/taosrestful'
-  export default {
-    name: 'STableTree',
-    props: {
-      db: Object,
-      link: Object,
+  const inPara = defineProps({
+    dbname: Object, //是否显示
+    link: Object, //是否显示
+  })
+  const emit = defineEmits(['stableSel'])
+  const stableList = ref([
+    {
+      name: '超级表',
+      uid: 'root',
+      children: [],
     },
-    data() {
-      return {
-        superTableData: [
-          {
-            name: '',
-            children: [],
-          },
-        ],
-      }
-    },
-    mounted: function () {
-      this.freshSurperTables()
-    },
-    methods: {
-      freshSurperTables() {
-        //清理选中的超级表和具体数据
-        let payload = {
-          host: this.link.host,
-          port: this.link.port,
-          user: this.link.user,
-          password: this.link.password,
-        }
-        if (this.db.name) {
-          showSuperTables(this.db.name, payload).then((data) => {
-            if (data.res) {
-              this.superTableData[0].name = '超级表'
-              this.superTableData[0].children = data.data
-              this.superTableData[0].icon = 'fa fa-sitemap'
-            } else {
-              this.$message({
-                message: data.msg,
-                type: 'error',
-                duration: 1000,
-              })
-            }
-          })
+  ])
+  onMounted(() => {
+    showSuperTables(inPara.dbname, inPara.link).then((data) => {
+      stableList.value[0].children = data.data.splice(0, 10)
+    })
+  })
+  function nodeProps({ option }) {
+    return {
+      onClick() {
+        if (option.uid != 'root') {
+          emit('stableSel', option)
         }
       },
-      superTableNodeClick(data) {
-        if (data.created_time) {
-          this.$emit('addTab', ' 超级表 ' + data.name + '@' + this.db.name + ' | ' + this.link.host + ':' + this.link.port, data, 'STableView', this.link)
-        }
-        this.$emit('tableChanged', data, 'super', this.db)
+      onContextmenu(e) {
+        optionsRef.value = [option]
+        showDropdownRef.value = true
+        xRef.value = e.clientX
+        yRef.value = e.clientY
+        console.log(e.clientX, e.clientY)
+        e.preventDefault()
       },
-      rightClick(row, column, event, type) {},
-    },
+    }
   }
 </script>
+<template>
+  <n-tree block-line :data="stableList" label-field="name" key-field="name" expand-on-click :node-props="nodeProps" />
+</template>

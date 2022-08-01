@@ -1,15 +1,67 @@
 <script setup>
+  import { h, ref, onMounted } from 'vue'
   import LinkAside from './components/LinkAside.vue'
+  import TableView from './components/TableView.vue'
+  import STableView from './components/STableView.vue'
+  import { DataClass, DataTable } from '@vicons/carbon'
+  const tabList = ref([])
+  const activeTab = ref('')
+  function handleClose(uid) {
+    const index = tabList.value.findIndex((v) => {
+      return uid === v.uid
+    })
+    tabList.value.splice(index, 1)
+    if (activeTab.value === uid) {
+      activeTab.value = tabList[index]
+    }
+  }
+  function handleDataSel(type, data) {
+    activeTab.value = data.uid
+    for (let i = 0; i < tabList.value.length; i++) {
+      if (tabList.value[i].type == type && tabList.value[i].uid == data.uid) {
+        activeTab.value = tabList.value[i].uid
+        return false
+      }
+    }
+    tabList.value.push({
+      type: type, //类型
+      uid: data.uid, //key
+      name: makeTabName(type, data), //显示名称
+      link: data.link,
+      table: data.table,
+    })
+  }
+  function makeTabName(type, data) {
+    if (type == 'stable') {
+      return `超级表${data.name}@${data.link.name}`
+    } else {
+      return `表${data.name}@${data.link.name}`
+    }
+  }
 </script>
 <template>
   <n-layout has-sider id="total">
     <n-layout-sider bordered :width="300">
       <n-message-provider>
-        <link-aside></link-aside>
+        <link-aside @dataSel="handleDataSel"></link-aside>
       </n-message-provider>
     </n-layout-sider>
-    <n-layout>
-      <span>内容</span>
+
+    <n-layout style="padding: 10px">
+      <n-tabs v-model:value="activeTab" type="card" closable tab-style="min-width: 100px;" @close="handleClose">
+        <n-tab-pane v-for="panel in tabList" :key="panel.uid" :name="panel.uid">
+          <template #tab>
+            <n-icon :size="18" v-if="panel.type == 'stable'" :component="DataClass" style="margin-right: 5px" />
+            <n-icon :size="18" v-if="panel.type == 'table'" :component="DataTable" style="margin-right: 5px" />
+            {{ panel.name }}
+          </template>
+          <div style="padding: 0 10px">
+            <n-message-provider>
+              <table-view v-if="panel.type == 'table'" :table="panel.table" :dbname="'iot'" :link="panel.link"></table-view>
+            </n-message-provider>
+          </div>
+        </n-tab-pane>
+      </n-tabs>
     </n-layout>
   </n-layout>
 </template>

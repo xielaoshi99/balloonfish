@@ -1,229 +1,201 @@
-<template>
-  <div>
-    <!-- 超级表筛选 -->
-    <el-dialog :close-on-click-modal="false" :before-close="cancelTableFilter" title="筛选条件" v-model="tableFilterDialog">
-      <el-form :model="tableFilter" label-width="80px">
-        <el-form-item label="数据项">
-          <el-checkbox-group v-model="tableFilter.fields">
-            <el-row class="checkboxGroup">
-              <el-col v-for="label in tableLabelItems" :key="label" :span="8">
-                <el-checkbox class="checkbox" :label="label">{{ label }}</el-checkbox>
-              </el-col>
-            </el-row>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="每页数目">
-          <el-radio-group v-model="eachPageTable">
-            <el-row class="checkboxGroup2">
-              <el-radio :label="10">10</el-radio>
-              <el-radio :label="15">15</el-radio>
-              <el-radio :label="20">20</el-radio>
-            </el-row>
-          </el-radio-group>
-        </el-form-item>
-        <el-switch class="switchStyle" v-model="superTorder" active-value="ASC" inactive-value="DESC" active-text="时间正序" inactive-text="时间倒序"></el-switch>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="cancelTableFilter" size="small">取消</el-button>
-          <el-button @click="postTableFilter" size="small">设置</el-button>
-        </span>
-      </template>
-    </el-dialog>
-    <!-- 超级表数据 -->
-    <el-row class="superTSearchRow">
-      <el-col :span="2" class="dataPackerLabel">时间范围:</el-col>
-      <el-col :span="10">
-        <div class="datePickerWrapper">
-          <el-date-picker
-            @change="getTableData(false, true)"
-            style="width: 100%"
-            size="small"
-            v-model="tableFilter.superDateRange"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            type="datetimerange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          ></el-date-picker>
-        </div>
-      </el-col>
-      <el-col :span="4" class="freshDataBtn">
-        <el-button @click="openTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">筛选条件</el-button>
-      </el-col>
-      <el-col :span="4" class="freshDataBtn">
-        <el-button @click="getTableData(true, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新</el-button>
-      </el-col>
-    </el-row>
-    <el-row class="superTSearchRow">
-      <el-col :span="5" class="dataPackerLabel">所属超级表：{{ table.stable_name }}</el-col>
-      <el-col :span="2" class="dataPackerLabel">标签信息:</el-col>
-      <el-col :span="17">
-        <div class="card-panel" v-for="(item, index) in tableTags" :key="index">
-          <label class="card-panel-key">
-            <i class="el-icon-paperclip"></i>
-            {{ index }}
-          </label>
-          <div class="card-panel-value">
-            {{ item }}
-          </div>
-        </div>
-      </el-col>
-    </el-row>
-    <el-table size="mini" :data="tableData" border max-height="400" style="width: 100%">
-      <el-table-column fixed v-if="tableLabel[0]" :prop="tableLabel[0]" :label="tableLabel[0]" width="250"></el-table-column>
-      <el-table-column v-for="(data, index) in tableLabel.slice(1)" :key="index" :prop="data" :label="data" width="180"></el-table-column>
-    </el-table>
-    <!-- 超级表分页 -->
-    <div class="paginationWrapper">
-      <el-pagination :hide-on-single-page="true" :current-page="currentPageTable" @current-change="paginationChange" :page-size="eachPageTable" layout="total,prev, pager, next" :total="totalTable"></el-pagination>
-    </div>
-  </div>
-</template>
-
-<script>
+<script setup>
+  import { h, ref, onMounted } from 'vue'
   import { selectData, getTableTag } from '../utils/taosrestful'
-  export default {
-    name: 'TableView',
-    props: {
-      table: Object,
-      dbname: String,
-      link: Object,
-    },
-    data() {
-      return {
-        tableData: [],
-        tableLabel: [],
-        tableLabelItems: [],
-        tableTags: {},
-        tableFilter: {
-          fields: [],
-          superDateRange: [],
-          superTSearchText: '',
-          superTSearchColumn: '',
-        },
-        superTorder: 'DESC',
-        tableFilterDialog: false,
-        superWhere: '',
-        //分页相关
-        eachPageTable: 10,
-        currentPageTable: 1,
-        totalTable: 0,
+  import { useMessage } from 'naive-ui'
+  import { EditFilter } from '@vicons/carbon'
+  import { RefreshSharp } from '@vicons/ionicons5'
+  const message = useMessage()
+  const inPara = defineProps({
+    table: Object,
+    dbname: String,
+    link: Object,
+  })
+  const tableFilter = ref({
+    fields: [],
+    dateRange: null,
+    superTSearchText: '',
+    superTSearchColumn: '',
+  })
+  const tableFilterCopy = ref({
+    fields: [],
+    dateRange: null,
+    superTSearchText: '',
+    superTSearchColumn: '',
+  })
+  const pageNum = ref(1)
+  const pageSize = ref(10)
+  const superWhere = ref('')
+  const tableOrder = ref('DESC')
+  const tableLabelItems = ref([])
+  const tableLabel = ref([])
+  const tableData = ref([])
+  const totalTable = ref(0)
+  const tableTags = ref({})
+  const loading = ref(true)
+  const filterShow = ref(false)
+  const railStyle = ({ focused, checked }) => {
+    const style = {}
+    if (checked) {
+      style.background = '#d03050'
+      if (focused) {
+        style.boxShadow = '0 0 0 2px #d0305040'
       }
-    },
-    emits: ['postMessage'],
-    created() {
-      this.getTableData(true)
-    },
-    methods: {
-      openTableFilterD() {
-        this.tableFilterDialog = true
-        this.superTableFilterCopy = JSON.parse(JSON.stringify(this.tableFilter))
-      },
-      cancelTableFilter() {
-        this.$message({
-          message: '取消操作',
-          type: 'warning',
-          duration: 1000,
-        })
-        this.tableFilterDialog = false
-        this.tableFilter = this.superTableFilterCopy
-      },
-      paginationChange(page) {
-        this.currentPageTable = page
-        this.getTableData(false)
-      },
-      postTableFilter() {
-        this.tableFilterDialog = false
-        this.getTableData(false, true)
-      },
-      getTableData(isFirst, isResetPage) {
-        //处理时间范围
-        let startTime = null
-        let endTime = null
-        if (this.tableFilter.superDateRange) {
-          startTime = this.tableFilter.superDateRange[0]
-          endTime = this.tableFilter.superDateRange[1]
-        }
-        //是否需要重置分页
-        if (isResetPage) {
-          this.currentPageTable = 1
-        }
-        let offsetVal = (this.currentPageTable - 1) * this.eachPageTable
-        if (this.table.table_name) {
-          selectData(this.table.table_name, this.dbname, this.link, this.tableFilter.fields, this.superWhere, this.eachPageTable, offsetVal, this.superTorder, startTime, endTime).then((data) => {
-            if (data.res) {
-              let tableDescribe = data.describe
-              let tableTagName = []
-              for (let i = 0; i < tableDescribe.length; i++) {
-                if (tableDescribe[i].Note == 'TAG') {
-                  tableTagName.push(tableDescribe[i].Field)
-                }
-              }
-              if (tableTagName.length != 0) {
-                getTableTag(this.table.table_name, this.dbname, this.link, tableTagName).then((data) => {
-                  this.tableTags = data.data[0]
-                })
-              }
-              if (data.data.length != 0) {
-                //有数据
-                if (isFirst) {
-                  this.tableLabelItems = Object.keys(data.data[0])
-                  this.$message({
-                    message: '获取成功',
-                    type: 'success',
-                    duration: 1000,
-                  })
-                }
-                this.tableLabel = Object.keys(data.data[0])
-                this.tableFilter.fields = Object.keys(data.data[0])
-                this.tableData = data.data
-                this.totalTable = data.count
-              } else {
-                this.$message({
-                  message: '无数据',
-                  type: 'warning',
-                  duration: 1000,
-                })
-              }
-            } else {
-              this.$message({
-                message: data.msg,
-                type: 'error',
-                duration: 1000,
-              })
+    } else {
+      style.background = '#2080f0'
+      if (focused) {
+        style.boxShadow = '0 0 0 2px #2080f040'
+      }
+    }
+    return style
+  }
+  onMounted(() => {
+    getTableData(true, true)
+  })
+  function getTableData(isFirst, isResetPage) {
+    loading.value = true
+    let startTime = null
+    let endTime = null
+    if (tableFilter.value.dateRange) {
+      startTime = tableFilter.value.dateRange[0]
+      endTime = tableFilter.value.dateRange[1]
+    }
+    //是否需要重置分页
+    if (isResetPage) {
+      pageNum.value = 1
+    }
+    let offsetVal = (pageNum.value - 1) * pageSize.value
+    if (inPara.table.table_name) {
+      selectData(inPara.table.table_name, inPara.dbname, inPara.link, tableFilter.value.fields, superWhere.value, pageSize.value, offsetVal, tableOrder.value, startTime, endTime).then((data) => {
+        if (data.res) {
+          let tableDescribe = data.describe
+          let tableTagName = []
+          for (let i = 0; i < tableDescribe.length; i++) {
+            if (tableDescribe[i].Note == 'TAG') {
+              tableTagName.push(tableDescribe[i].Field)
             }
-          })
+          }
+          if (tableTagName.length != 0) {
+            getTableTag(inPara.table.table_name, inPara.dbname, inPara.link, tableTagName).then((data) => {
+              tableTags.value = data.data[0]
+              console.log(data.data[0])
+            })
+          }
+          if (data.data.length != 0) {
+            //有数据
+            if (isFirst) {
+              tableLabelItems.value = Object.keys(data.data[0])
+            }
+            tableLabel.value = Object.keys(data.data[0]).map((i) => {
+              if (i === 'ts') {
+                return {
+                  title: i,
+                  key: i,
+                  fixed: 'left',
+                  minWidth: '200',
+                }
+              }
+              return {
+                title: i,
+                key: i,
+                minWidth: '150',
+              }
+            })
+            tableFilter.value.fields = Object.keys(data.data[0])
+            tableFilterCopy.value.fields = Object.keys(data.data[0])
+            tableData.value = data.data
+            totalTable.value = data.count
+            loading.value = false
+          } else {
+            tableData.value = []
+            totalTable.value = 0
+            message.warning('数据为空', {
+              duration: 1500,
+            })
+            loading.value = false
+          }
+        } else {
         }
-      },
-    },
+      })
+    }
+  }
+  function pageChange(page) {
+    pageNum.value = page
+    getTableData(false)
+  }
+  function sizeChange(page) {
+    pageSize.value = page
+    getTableData(false, true)
+  }
+  function checkUpdate(checked) {}
+  function filterSubmit() {
+    getTableData(false, true)
+    filterShow.value = false
+  }
+  function cancelTableFilter() {
+    tableFilter.value = tableFilterCopy.value
+    filterShow.value = false
+  }
+  function dateConfirm() {
+    setTimeout(() => {
+      getTableData(false, true)
+    }, 1)
   }
 </script>
-<style scoped>
-  .card-panel {
-    color: #fff;
-    text-align: center;
-    height: 29px;
-    display: inline-block;
-    font-size: 14px;
-    border: 1px solid #66b1ff;
-    border-radius: 3px;
-    margin-right: 10px;
-  }
-  .card-panel-key {
-    display: inline-block;
-    background: #66b1ff;
-    height: 29px;
-    line-height: 29px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  .card-panel-value {
-    color: #606266;
-    display: inline-block;
-    height: 29px;
-    line-height: 29px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-</style>
+<template>
+  <n-modal
+    v-model:show="filterShow"
+    preset="card"
+    :style="{
+      width: '600px',
+    }"
+    title="筛选条件"
+    :bordered="false"
+    :segmented="{ content: 'soft', footer: 'soft' }"
+    :on-after-leave="formClose"
+  >
+    <n-form ref="formRef" :model="tableFilter" label-placement="left" label-width="auto" require-mark-placement="right-hanging" size="medium" :show-feedback="false">
+      <n-form-item label="数据项：" path="fields">
+        <n-checkbox-group v-model:value="tableFilter.fields" @update:value="checkUpdate">
+          <n-space item-style="display: flex;">
+            <n-checkbox v-for="label in tableLabelItems" :key="label" :value="label" :label="label" />
+          </n-space>
+        </n-checkbox-group>
+      </n-form-item>
+      <n-form-item label="排序规则：" style="margin-top: 15px" checked-value="DESC" unchecked-value="ASC">
+        <n-switch v-model:value="tableOrder" :rail-style="railStyle">
+          <template #checked>时间倒序</template>
+          <template #unchecked>时间正序</template>
+        </n-switch>
+      </n-form-item>
+    </n-form>
+    <template #footer>
+      <n-space justify="right">
+        <n-button type="primary" @click="cancelTableFilter" ghost>取消</n-button>
+        <n-button type="primary" @click="filterSubmit">确认</n-button>
+      </n-space>
+    </template>
+  </n-modal>
+  <n-form ref="formRef" :model="tableFilter" label-placement="left" label-width="auto" require-mark-placement="right-hanging" size="medium" :show-feedback="false">
+    <n-grid :cols="24" :x-gap="15" :y-gap="15">
+      <n-form-item-gi :span="24" label="时间范围：" path="dateRange">
+        <n-date-picker v-model:value="tableFilter.dateRange" type="daterange" clearable :on-confirm="dateConfirm" :on-clear="dateConfirm" style="width: 100%" />
+        <n-button style="margin: 0 20px" :disabled="tableData.length == 0" @click="filterShow = true">
+          <n-icon :size="18" :component="EditFilter" style="margin-right: 5px" />
+          筛选条件
+        </n-button>
+        <n-button @click="getTableData(true, false)">
+          <n-icon :size="18" :component="RefreshSharp" style="margin-right: 5px" />
+          数据刷新
+        </n-button>
+      </n-form-item-gi>
+      <n-form-item-gi :span="5" label="超级表：">{{ inPara.table.stable_name }}</n-form-item-gi>
+      <n-form-item-gi :span="19" label="标签信息：">
+        <n-space>
+          <n-tag v-for="(item, index) in tableTags" :key="index" round>{{ index }}：{{ item }}</n-tag>
+        </n-space>
+      </n-form-item-gi>
+    </n-grid>
+  </n-form>
+  <n-data-table :loading="loading" :columns="tableLabel" :data="tableData" :bordered="false" style="margin: 20px 0" />
+  <n-pagination v-model:page="pageNum" v-model:page-size="pageSize" :item-count="totalTable" :on-update:page="pageChange" :on-update:page-size="sizeChange" show-size-picker :page-sizes="[10, 20, 30, 40]" />
+</template>
