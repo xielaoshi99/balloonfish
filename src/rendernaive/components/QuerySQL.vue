@@ -10,10 +10,10 @@
       <el-button size="medium">保存</el-button>
     </span>
     <textarea class="sqlEditor" ref="textarea"></textarea>
-    <vxe-table :data="sqlResult" size="mini" border height="300" style="width: 100%; margin-top: 20px">
+    <!-- <vxe-table :data="sqlResult" size="mini" border height="300" style="width: 100%; margin-top: 20px">
       <vxe-table-column fixed="left" v-if="consoleResultLabel[0]" :field="consoleResultLabel[0]" :title="consoleResultLabel[0]" width="200"></vxe-table-column>
       <vxe-table-column v-for="(data, index) in consoleResultLabel.slice(1)" :key="index" :field="data" :title="data" width="180"></vxe-table-column>
-    </vxe-table>
+    </vxe-table> -->
   </div>
 </template>
 

@@ -9,7 +9,7 @@
     dbname: Object, //是否显示
     link: Object, //是否显示
   })
-  const emit = defineEmits(['tableSel'])
+  const emit = defineEmits(['tableSel', 'tableAdd'])
   const showDropdown = ref(false)
   const x = ref(0)
   const y = ref(0)
@@ -93,6 +93,7 @@
     showDropdown.value = false
   }
   function handleSelect(params) {
+    emit('tableAdd', inPara.link)
     showDropdown.value = false
   }
 </script>

@@ -22,6 +22,9 @@
   function handleSTableSel(table) {
     emit('dataSel', 'stable', { link: inPara.link, name: table.name, uid: `${inPara.link.id}-${table.name}`, table: table })
   }
+  function handleTableAdd(table) {
+    emit('dataSel', 'tableadd', inPara.link)
+  }
 </script>
 <template>
   <n-collapse>
@@ -31,7 +34,7 @@
         {{ item.name }}
       </template>
       <stable-tree :dbname="item.name" :link="inPara.link" @stableSel="handleSTableSel"></stable-tree>
-      <table-tree :dbname="item.name" :link="inPara.link" @tableSel="handleTableSel"></table-tree>
+      <table-tree :dbname="item.name" :link="inPara.link" @tableSel="handleTableSel" @tableAdd="handleTableAdd"></table-tree>
     </n-collapse-item>
   </n-collapse>
 </template>

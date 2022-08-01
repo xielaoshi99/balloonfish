@@ -90,7 +90,7 @@
                   title: i,
                   key: i,
                   fixed: 'left',
-                  minWidth: '200',
+                  minWidth: '250',
                 }
               }
               return {

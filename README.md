@@ -9,6 +9,8 @@
 </div>
 <br/>
 
+2022.08.01 更新 使用naive-ui重构中，重构完成将会删除element版本
+
 从2019年年底接触[TDengine](https://github.com/taosdata/TDengine)，就产生了为其开发一款可视化管理工具的想法，可惜要么工作忙要么发懒，一直没有着手去做，直到今年3月份看到了一个名为[TDengineGUI](https://github.com/skye0207/TDengineGUI)的项目，深受启发，并打算使用vue3重构一版，然后就又碰上了公司里大项目、建党100周年活动等等..... 总之又鸽了几个月。现在终于写出个模样来了。
 
 ## 感谢

@@ -8,6 +8,21 @@
   import { zhCN, dateZhCN } from 'naive-ui'
   const tabList = ref([])
   const activeTab = ref('')
+  const showDropdown = ref(false)
+  const x = ref(0)
+  const y = ref(0)
+  const options = ref([
+    {
+      label: '关闭其他',
+      key: 'other',
+      // icon: renderIcon(Delete),
+    },
+    {
+      label: '关闭所有',
+      key: 'all',
+      //  icon: renderIcon(Edit),
+    },
+  ])
   function handleClose(uid) {
     const index = tabList.value.findIndex((v) => {
       return uid === v.uid
@@ -18,20 +33,32 @@
     }
   }
   function handleDataSel(type, data) {
-    activeTab.value = data.uid
-    for (let i = 0; i < tabList.value.length; i++) {
-      if (tabList.value[i].type == type && tabList.value[i].uid == data.uid) {
-        activeTab.value = tabList.value[i].uid
-        return false
-      }
+    switch (type) {
+      case 'tableadd':
+        activeTab.value = data.id + '-addtable'
+        tabList.value.push({
+          type: type, //类型
+          uid: data.id + '-addtable', //key
+          name: '添加表@' + data.name, //显示名称
+          link: data,
+        })
+        break
+      default:
+        activeTab.value = data.uid
+        for (let i = 0; i < tabList.value.length; i++) {
+          if (tabList.value[i].type == type && tabList.value[i].uid == data.uid) {
+            activeTab.value = tabList.value[i].uid
+            return false
+          }
+        }
+        tabList.value.push({
+          type: type, //类型
+          uid: data.uid, //key
+          name: makeTabName(type, data), //显示名称
+          link: data.link,
+          table: data.table,
+        })
     }
-    tabList.value.push({
-      type: type, //类型
-      uid: data.uid, //key
-      name: makeTabName(type, data), //显示名称
-      link: data.link,
-      table: data.table,
-    })
   }
   function makeTabName(type, data) {
     if (type == 'stable') {
@@ -39,6 +66,18 @@
     } else {
       return `表${data.name}@${data.link.name}`
     }
+  }
+  const tabProps = ref({
+    onContextmenu(e) {
+      x.value = e.clientX
+      y.value = e.clientY
+      showDropdown.value = true
+      e.preventDefault()
+    },
+  })
+
+  function handleSelect(params) {
+    showDropdown.value = false
   }
 </script>
 <template>
@@ -52,7 +91,7 @@
 
       <n-layout style="padding: 10px">
         <n-tabs v-model:value="activeTab" type="card" closable tab-style="min-width: 100px;" @close="handleClose">
-          <n-tab-pane v-for="panel in tabList" :key="panel.uid" :name="panel.uid">
+          <n-tab-pane v-for="panel in tabList" :key="panel.uid" :name="panel.uid" :tab-props="tabProps">
             <template #tab>
               <n-icon :size="18" v-if="panel.type == 'stable'" :component="DataClass" style="margin-right: 5px" />
               <n-icon :size="18" v-if="panel.type == 'table'" :component="DataTable" style="margin-right: 5px" />
@@ -68,10 +107,11 @@
         </n-tabs>
       </n-layout>
     </n-layout>
+    <n-dropdown trigger="manual" placement="bottom-start" :show="showDropdown" :options="options" :x="x" :y="y" @select="handleSelect" @clickoutside="showDropdown.value = false" />
   </n-config-provider>
 </template>
 <style lang="scss">
   #total {
-    height: 100%;
+    height: 100vh;
   }
 </style>
