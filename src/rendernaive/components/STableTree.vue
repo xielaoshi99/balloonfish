@@ -22,6 +22,8 @@
     return {
       onClick() {
         if (option.uid != 'root') {
+          let data = option
+          data.dbname = inPara.dbname
           emit('stableSel', option)
         }
       },

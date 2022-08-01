@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import naive from 'naive-ui'
+
 import './index.css'
 import 'font-awesome/css/font-awesome.css'
 

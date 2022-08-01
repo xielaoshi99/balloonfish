@@ -4,6 +4,8 @@
   import TableView from './components/TableView.vue'
   import STableView from './components/STableView.vue'
   import { DataClass, DataTable } from '@vicons/carbon'
+  import { NConfigProvider } from 'naive-ui'
+  import { zhCN, dateZhCN } from 'naive-ui'
   const tabList = ref([])
   const activeTab = ref('')
   function handleClose(uid) {
@@ -40,30 +42,33 @@
   }
 </script>
 <template>
-  <n-layout has-sider id="total">
-    <n-layout-sider bordered :width="300">
-      <n-message-provider>
-        <link-aside @dataSel="handleDataSel"></link-aside>
-      </n-message-provider>
-    </n-layout-sider>
+  <n-config-provider :locale="zhCN" :date-locale="dateZhCN">
+    <n-layout has-sider id="total">
+      <n-layout-sider bordered :width="300">
+        <n-message-provider>
+          <link-aside @dataSel="handleDataSel"></link-aside>
+        </n-message-provider>
+      </n-layout-sider>
 
-    <n-layout style="padding: 10px">
-      <n-tabs v-model:value="activeTab" type="card" closable tab-style="min-width: 100px;" @close="handleClose">
-        <n-tab-pane v-for="panel in tabList" :key="panel.uid" :name="panel.uid">
-          <template #tab>
-            <n-icon :size="18" v-if="panel.type == 'stable'" :component="DataClass" style="margin-right: 5px" />
-            <n-icon :size="18" v-if="panel.type == 'table'" :component="DataTable" style="margin-right: 5px" />
-            {{ panel.name }}
-          </template>
-          <div style="padding: 0 10px">
-            <n-message-provider>
-              <table-view v-if="panel.type == 'table'" :table="panel.table" :dbname="'iot'" :link="panel.link"></table-view>
-            </n-message-provider>
-          </div>
-        </n-tab-pane>
-      </n-tabs>
+      <n-layout style="padding: 10px">
+        <n-tabs v-model:value="activeTab" type="card" closable tab-style="min-width: 100px;" @close="handleClose">
+          <n-tab-pane v-for="panel in tabList" :key="panel.uid" :name="panel.uid">
+            <template #tab>
+              <n-icon :size="18" v-if="panel.type == 'stable'" :component="DataClass" style="margin-right: 5px" />
+              <n-icon :size="18" v-if="panel.type == 'table'" :component="DataTable" style="margin-right: 5px" />
+              {{ panel.name }}
+            </template>
+            <div style="padding: 0 10px">
+              <n-message-provider>
+                <table-view v-if="panel.type == 'table'" :table="panel.table" :dbname="panel.table.dbname" :link="panel.link"></table-view>
+                <s-table-view v-if="panel.type == 'stable'" :table="panel.table" :dbname="panel.table.dbname" :link="panel.link"></s-table-view>
+              </n-message-provider>
+            </div>
+          </n-tab-pane>
+        </n-tabs>
+      </n-layout>
     </n-layout>
-  </n-layout>
+  </n-config-provider>
 </template>
 <style lang="scss">
   #total {

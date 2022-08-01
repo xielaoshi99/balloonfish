@@ -77,7 +77,6 @@
           if (tableTagName.length != 0) {
             getTableTag(inPara.table.table_name, inPara.dbname, inPara.link, tableTagName).then((data) => {
               tableTags.value = data.data[0]
-              console.log(data.data[0])
             })
           }
           if (data.data.length != 0) {
@@ -178,7 +177,7 @@
   <n-form ref="formRef" :model="tableFilter" label-placement="left" label-width="auto" require-mark-placement="right-hanging" size="medium" :show-feedback="false">
     <n-grid :cols="24" :x-gap="15" :y-gap="15">
       <n-form-item-gi :span="24" label="时间范围：" path="dateRange">
-        <n-date-picker v-model:value="tableFilter.dateRange" type="daterange" clearable :on-confirm="dateConfirm" :on-clear="dateConfirm" style="width: 100%" />
+        <n-date-picker v-model:value="tableFilter.dateRange" type="daterange" clearable :disabled="tableData.length == 0" :on-confirm="dateConfirm" :on-clear="dateConfirm" style="width: 100%" />
         <n-button style="margin: 0 20px" :disabled="tableData.length == 0" @click="filterShow = true">
           <n-icon :size="18" :component="EditFilter" style="margin-right: 5px" />
           筛选条件

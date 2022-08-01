@@ -1,200 +1,187 @@
-<template>
-  <div>
-    <!-- 超级表筛选 -->
-    <el-dialog :close-on-click-modal="false" :before-close="cancelsuperTableFilter" title="筛选条件" v-model="superTableFilterDialog">
-      <el-form :model="superTableFilter" label-width="80px">
-        <el-form-item label="数据项">
-          <el-checkbox-group v-model="superTableFilter.fields">
-            <el-row class="checkboxGroup">
-              <el-col v-for="label in this.superTableLabelItems" :key="label" :span="8">
-                <el-checkbox class="checkbox" :label="label">{{ label }}</el-checkbox>
-              </el-col>
-            </el-row>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="每页数目">
-          <el-radio-group v-model="eachPagesuperTable">
-            <el-row class="checkboxGroup2">
-              <el-radio :label="10">10</el-radio>
-              <el-radio :label="15">15</el-radio>
-              <el-radio :label="20">20</el-radio>
-            </el-row>
-          </el-radio-group>
-        </el-form-item>
-        <el-switch class="switchStyle" v-model="superTorder" active-value="ASC" inactive-value="DESC" active-text="时间正序" inactive-text="时间倒序"></el-switch>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="cancelsuperTableFilter" size="small">取消</el-button>
-          <el-button @click="postsuperTableFilter" size="small">设置</el-button>
-        </span>
-      </template>
-    </el-dialog>
-    <!-- 超级表数据 -->
-    <el-row class="superTSearchRow">
-      <el-col :span="3" class="dataPackerLabel">时间范围:</el-col>
-      <el-col :span="13">
-        <div class="datePickerWrapper">
-          <el-date-picker
-            @change="getSTableData(false, true)"
-            style="width: 100%"
-            size="small"
-            v-model="superTableFilter.superDateRange"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            type="datetimerange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          ></el-date-picker>
-        </div>
-      </el-col>
-      <el-col :span="4" class="freshDataBtn">
-        <el-button @click="opensuperTableFilterD" size="small" style="width: 100%" icon="el-icon-setting">筛选条件</el-button>
-      </el-col>
-      <el-col :span="4" class="freshDataBtn">
-        <el-button @click="getSTableData(false, false)" size="small" style="width: 100%" icon="el-icon-refresh">数据刷新</el-button>
-      </el-col>
-    </el-row>
-    <el-table size="mini" :data="superTableData" border max-height="585" style="width: 100%">
-      <el-table-column fixed v-if="superTableLabel[0]" :prop="superTableLabel[0]" :label="superTableLabel[0]" width="200"></el-table-column>
-      <el-table-column v-for="(data, index) in superTableLabel.slice(1)" :key="index" :prop="data" :label="data" width="180" :render-header="renderHeader"></el-table-column>
-    </el-table>
-    <!-- 超级表分页 -->
-    <div class="paginationWrapper">
-      <el-pagination :hide-on-single-page="true" :current-page="currentPagesuperTable" @current-change="paginationsuperChange" :page-size="eachPagesuperTable" layout="prev, pager, next" :total="totalsuperTable"></el-pagination>
-    </div>
-  </div>
-</template>
-
-<script>
+<script setup>
+  import { h, ref, onMounted } from 'vue'
   import { selectData } from '../utils/taosrestful'
-  export default {
-    name: 'STableView',
-    props: {
-      table: Object,
-      dbname: String,
-      link: Object,
-    },
-    data() {
-      return {
-        superTableData: [],
-        tableTagName: [],
-        superTableLabel: [],
-        superTableLabelItems: [],
-        superTableFilter: {
-          fields: [],
-          superDateRange: [],
-          superTSearchText: '',
-          superTSearchColumn: '',
-        },
-        superTorder: 'DESC',
-        superTableFilterDialog: false,
-        superWhere: '',
-        //分页相关
-        eachPagesuperTable: 10,
-        currentPagesuperTable: 1,
-        totalsuperTable: 0,
+  import { useMessage } from 'naive-ui'
+  import { EditFilter } from '@vicons/carbon'
+  import { RefreshSharp } from '@vicons/ionicons5'
+  const message = useMessage()
+  const inPara = defineProps({
+    table: Object,
+    dbname: String,
+    link: Object,
+  })
+  const tableFilter = ref({
+    fields: [],
+    dateRange: null,
+    superTSearchText: '',
+    superTSearchColumn: '',
+  })
+  const tableFilterCopy = ref({
+    fields: [],
+    dateRange: null,
+    superTSearchText: '',
+    superTSearchColumn: '',
+  })
+  const pageNum = ref(1)
+  const pageSize = ref(10)
+  const superWhere = ref('')
+  const tableOrder = ref('DESC')
+  const tableLabelItems = ref([])
+  const tableLabel = ref([])
+  const tableData = ref([])
+  const totalTable = ref(0)
+  const tableTagName = ref([])
+  const loading = ref(true)
+  const filterShow = ref(false)
+  const railStyle = ({ focused, checked }) => {
+    const style = {}
+    if (checked) {
+      style.background = '#d03050'
+      if (focused) {
+        style.boxShadow = '0 0 0 2px #d0305040'
       }
-    },
-    created() {
-      this.getSTableData(true, true)
-    },
-    methods: {
-      opensuperTableFilterD() {
-        this.superTableFilterDialog = true
-        this.superTableFilterCopy = JSON.parse(JSON.stringify(this.superTableFilter))
-      },
-      cancelsuperTableFilter() {
-        this.$message({
-          message: '取消操作',
-          type: 'warning',
-          duration: 1000,
-        })
-        this.superTableFilterDialog = false
-        this.superTableFilter = this.superTableFilterCopy
-      },
-      paginationsuperChange(page) {
-        this.currentPagesuperTable = page
-        this.getSTableData(false)
-      },
-      postsuperTableFilter() {
-        this.superTableFilterDialog = false
-        this.getSTableData(false, true)
-      },
-      getSTableData(isFirst, isResetPage) {
-        //处理时间范围
-        let startTime = null
-        let endTime = null
-        if (this.superTableFilter.superDateRange) {
-          startTime = this.superTableFilter.superDateRange[0]
-          endTime = this.superTableFilter.superDateRange[1]
-        }
-        //是否需要重置分页
-        if (isResetPage) {
-          this.currentPagesuperTable = 1
-        }
-        let offsetVal = (this.currentPagesuperTable - 1) * this.eachPagesuperTable
-        if (this.table) {
-          selectData(this.table.name, this.dbname, this.link, this.superTableFilter.fields, this.superWhere, this.eachPagesuperTable, offsetVal, this.superTorder, startTime, endTime).then((data) => {
-            if (data.res) {
+    } else {
+      style.background = '#2080f0'
+      if (focused) {
+        style.boxShadow = '0 0 0 2px #2080f040'
+      }
+    }
+    return style
+  }
+  onMounted(() => {
+    getTableData(true, true)
+  })
+  function getTableData(isFirst, isResetPage) {
+    loading.value = true
+    let startTime = null
+    let endTime = null
+    if (tableFilter.value.dateRange) {
+      startTime = tableFilter.value.dateRange[0]
+      endTime = tableFilter.value.dateRange[1]
+    }
+    //是否需要重置分页
+    if (isResetPage) {
+      pageNum.value = 1
+    }
+    let offsetVal = (pageNum.value - 1) * pageSize.value
+    if (inPara.table.name) {
+      selectData(inPara.table.name, inPara.dbname, inPara.link, tableFilter.value.fields, superWhere.value, pageSize.value, offsetVal, tableOrder.value, startTime, endTime).then((data) => {
+        if (data.res) {
+          if (data.data.length != 0) {
+            if (isFirst) {
               let tableDescribe = data.describe
               for (let i = 0; i < tableDescribe.length; i++) {
                 if (tableDescribe[i].Note == 'TAG') {
-                  this.tableTagName.push(tableDescribe[i].Field)
+                  tableTagName.value.push(tableDescribe[i].Field)
                 }
               }
-              //成功
-              if (data.data.length != 0) {
-                //有数据
-                if (isFirst) {
-                  this.superTableLabelItems = Object.keys(data.data[0])
-                  this.$message({
-                    message: '获取成功',
-                    type: 'success',
-                    duration: 1000,
-                  })
-                }
-                this.superTableLabel = Object.keys(data.data[0])
-                this.superTableFilter.fields = Object.keys(data.data[0])
-                this.superTableData = data.data
-                this.totalsuperTable = data.count
-              } else {
-                this.$message({
-                  message: '无数据',
-                  type: 'warning',
-                  duration: 1000,
-                })
-              }
-            } else {
-              if (data.msg == 'Result set too large to be sorted') {
-                this.$confirm('数据量过大，由于TDengine限制只能进行时间正向排序，是否切换为时间正向排序？', '提示', {
-                  confirmButtonText: '确定',
-                  cancelButtonText: '取消',
-                  type: 'warning',
-                })
-                  .then(() => {
-                    this.superTorder = 'ASC'
-                    this.getSTableData(false, true)
-                  })
-                  .catch(() => {})
-              } else {
-                this.$message({
-                  message: data.msg,
-                  type: 'error',
-                  duration: 1000,
-                })
-              }
+              tableLabelItems.value = Object.keys(data.data[0])
             }
-          })
-        }
-      },
-      renderHeader(h) {
-        if (this.tableTagName.includes(h.column.label)) {
-          return '(TAG) ' + h.column.label
+            tableLabel.value = Object.keys(data.data[0]).map((i) => {
+              if (i === 'ts') {
+                return {
+                  title: i,
+                  key: i,
+                  fixed: 'left',
+                  minWidth: '250',
+                }
+              }
+              return {
+                title: tableTagName.value.includes(i) ? `(TAG)${i}` : i,
+                key: i,
+                minWidth: '150',
+              }
+            })
+            tableFilter.value.fields = Object.keys(data.data[0])
+            tableFilterCopy.value.fields = Object.keys(data.data[0])
+            tableData.value = data.data
+            totalTable.value = data.count
+            loading.value = false
+          } else {
+            tableData.value = []
+            totalTable.value = 0
+            message.warning('数据为空', {
+              duration: 1500,
+            })
+            loading.value = false
+          }
         } else {
-          return h.column.label
         }
-      },
-    },
+      })
+    }
+  }
+  function pageChange(page) {
+    pageNum.value = page
+    getTableData(false)
+  }
+  function sizeChange(page) {
+    pageSize.value = page
+    getTableData(false, true)
+  }
+  function checkUpdate(checked) {}
+  function filterSubmit() {
+    getTableData(false, true)
+    filterShow.value = false
+  }
+  function cancelTableFilter() {
+    tableFilter.value = tableFilterCopy.value
+    filterShow.value = false
+  }
+  function dateConfirm() {
+    setTimeout(() => {
+      getTableData(false, true)
+    }, 1)
   }
 </script>
+<template>
+  <n-modal
+    v-model:show="filterShow"
+    preset="card"
+    :style="{
+      width: '600px',
+    }"
+    title="筛选条件"
+    :bordered="false"
+    :segmented="{ content: 'soft', footer: 'soft' }"
+    :on-after-leave="formClose"
+  >
+    <n-form ref="formRef" :model="tableFilter" label-placement="left" label-width="auto" require-mark-placement="right-hanging" size="medium" :show-feedback="false">
+      <n-form-item label="数据项：" path="fields">
+        <n-checkbox-group v-model:value="tableFilter.fields" @update:value="checkUpdate">
+          <n-space item-style="display: flex;">
+            <n-checkbox v-for="label in tableLabelItems" :key="label" :value="label" :label="label" />
+          </n-space>
+        </n-checkbox-group>
+      </n-form-item>
+      <n-form-item label="排序规则：" style="margin-top: 15px" checked-value="DESC" unchecked-value="ASC">
+        <n-switch v-model:value="tableOrder" :rail-style="railStyle">
+          <template #checked>时间倒序</template>
+          <template #unchecked>时间正序</template>
+        </n-switch>
+      </n-form-item>
+    </n-form>
+    <template #footer>
+      <n-space justify="right">
+        <n-button type="primary" @click="cancelTableFilter" ghost>取消</n-button>
+        <n-button type="primary" @click="filterSubmit">确认</n-button>
+      </n-space>
+    </template>
+  </n-modal>
+  <n-form ref="formRef" :model="tableFilter" label-placement="left" label-width="auto" require-mark-placement="right-hanging" size="medium" :show-feedback="false">
+    <n-grid :cols="24" :x-gap="15" :y-gap="15">
+      <n-form-item-gi :span="24" label="时间范围：" path="dateRange">
+        <n-date-picker v-model:value="tableFilter.dateRange" type="daterange" clearable :disabled="tableData.length == 0" :on-confirm="dateConfirm" :on-clear="dateConfirm" style="width: 100%" />
+        <n-button style="margin: 0 20px" :disabled="tableData.length == 0" @click="filterShow = true">
+          <n-icon :size="18" :component="EditFilter" style="margin-right: 5px" />
+          筛选条件
+        </n-button>
+        <n-button @click="getTableData(true, false)">
+          <n-icon :size="18" :component="RefreshSharp" style="margin-right: 5px" />
+          数据刷新
+        </n-button>
+      </n-form-item-gi>
+    </n-grid>
+  </n-form>
+  <n-data-table :loading="loading" :columns="tableLabel" :data="tableData" :bordered="false" style="margin: 20px 0" />
+  <n-pagination v-model:page="pageNum" v-model:page-size="pageSize" :item-count="totalTable" :on-update:page="pageChange" :on-update:page-size="sizeChange" show-size-picker :page-sizes="[10, 20, 30, 40]" />
+</template>

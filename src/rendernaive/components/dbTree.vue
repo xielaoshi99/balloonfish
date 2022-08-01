@@ -25,10 +25,11 @@
 </script>
 <template>
   <n-collapse>
-    <template #arrow>
-      <n-icon :size="18" :component="Database" />
-    </template>
-    <n-collapse-item v-for="(item, index) in dbList" :key="index" :title="item.name">
+    <n-collapse-item v-for="(item, index) in dbList" :key="index">
+      <template #header>
+        <n-icon :size="18" :component="Database" style="margin-right: 5px" />
+        {{ item.name }}
+      </template>
       <stable-tree :dbname="item.name" :link="inPara.link" @stableSel="handleSTableSel"></stable-tree>
       <table-tree :dbname="item.name" :link="inPara.link" @tableSel="handleTableSel"></table-tree>
     </n-collapse-item>
