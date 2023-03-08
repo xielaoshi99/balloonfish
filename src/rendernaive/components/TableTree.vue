@@ -22,6 +22,7 @@
     },
   ])
   const allTable = ref([])
+  const showForm = ref(false)
   onMounted(() => {
     showTables(inPara.dbname, inPara.link).then((data) => {
       allTable.value = data.data
@@ -92,12 +93,62 @@
   function handleClickoutside() {
     showDropdown.value = false
   }
-  function handleSelect(params) {
-    emit('tableAdd', inPara.link)
+  function handleSelect(key) {
+    switch (key) {
+      case 'add':
+        showForm.value = true
+        //emit('tableAdd', inPara.link, inPara.dbname, 'add', false)
+        break
+      case 'edit':
+        emit('tableAdd', inPara.link, inPara.dbname, 'edit', false)
+        break
+      default:
+        break
+    }
     showDropdown.value = false
   }
+  function formClose() {}
+  const songs = ref([
+    {
+      value: 'stable',
+      label: '以超级表作为模板',
+    },
+    {
+      value: '直接创建',
+      label: '直接创建',
+    },
+  ])
+  const value = ref(null)
 </script>
 <template>
   <n-tree block-line :data="tableList" label-field="table_name" key-field="uid" expand-on-click :node-props="nodeProps" />
   <n-dropdown trigger="manual" placement="bottom-start" :show="showDropdown" :options="options" :x="x" :y="y" @select="handleSelect" @clickoutside="handleClickoutside" />
+
+  <n-modal
+    v-model:show="showForm"
+    preset="card"
+    :style="{
+      width: '400px',
+    }"
+    title="请选择创建表的方式"
+    :bordered="false"
+    :segmented="{ content: 'soft', footer: 'soft' }"
+    :on-after-leave="formClose"
+  >
+    <n-radio-group v-model:value="value" name="radiogroup">
+      <n-space vertical>
+        <n-radio v-for="song in songs" :key="song.value" :value="song.value">
+          <n-space>
+            <span>{{ song.label }}</span>
+            <n-select v-if="song.value == 'stable'" v-model:value="value" :options="options" />
+          </n-space>
+        </n-radio>
+      </n-space>
+    </n-radio-group>
+    <template #footer>
+      <n-space justify="right">
+        <n-button type="primary">确认</n-button>
+      </n-space>
+    </template>
+  </n-modal>
 </template>

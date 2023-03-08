@@ -125,7 +125,6 @@
     pageSize.value = page
     getTableData(false, true)
   }
-  function checkUpdate(checked) {}
   function filterSubmit() {
     getTableData(false, true)
     filterShow.value = false
@@ -154,7 +153,7 @@
   >
     <n-form ref="formRef" :model="tableFilter" label-placement="left" label-width="auto" require-mark-placement="right-hanging" size="medium" :show-feedback="false">
       <n-form-item label="数据项：" path="fields">
-        <n-checkbox-group v-model:value="tableFilter.fields" @update:value="checkUpdate">
+        <n-checkbox-group v-model:value="tableFilter.fields">
           <n-space item-style="display: flex;">
             <n-checkbox v-for="label in tableLabelItems" :key="label" :value="label" :label="label" />
           </n-space>

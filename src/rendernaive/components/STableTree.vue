@@ -28,12 +28,12 @@
         }
       },
       onContextmenu(e) {
-        optionsRef.value = [option]
-        showDropdownRef.value = true
-        xRef.value = e.clientX
-        yRef.value = e.clientY
-        console.log(e.clientX, e.clientY)
-        e.preventDefault()
+        // optionsRef.value = [option]
+        // showDropdownRef.value = true
+        // xRef.value = e.clientX
+        // yRef.value = e.clientY
+        // console.log(e.clientX, e.clientY)
+        // e.preventDefault()
       },
     }
   }

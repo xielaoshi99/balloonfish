@@ -3,6 +3,7 @@
   import LinkAside from './components/LinkAside.vue'
   import TableView from './components/TableView.vue'
   import STableView from './components/STableView.vue'
+  import CreateTable from './components/CreateTable.vue'
   import { DataClass, DataTable } from '@vicons/carbon'
   import { NConfigProvider } from 'naive-ui'
   import { zhCN, dateZhCN } from 'naive-ui'
@@ -33,24 +34,24 @@
     }
   }
   function handleDataSel(type, data) {
+    activeTab.value = data.uid
+    for (let i = 0; i < tabList.value.length; i++) {
+      if (tabList.value[i].type == type && tabList.value[i].uid == data.uid) {
+        activeTab.value = tabList.value[i].uid
+        return false
+      }
+    }
     switch (type) {
-      case 'tableadd':
-        activeTab.value = data.id + '-addtable'
+      case 'tablechange':
         tabList.value.push({
           type: type, //类型
-          uid: data.id + '-addtable', //key
-          name: '添加表@' + data.name, //显示名称
-          link: data,
+          uid: data.uid, //key
+          name: '添加表@' + data.link.name, //显示名称
+          link: data.link,
+          dbname: data.dbname,
         })
         break
       default:
-        activeTab.value = data.uid
-        for (let i = 0; i < tabList.value.length; i++) {
-          if (tabList.value[i].type == type && tabList.value[i].uid == data.uid) {
-            activeTab.value = tabList.value[i].uid
-            return false
-          }
-        }
         tabList.value.push({
           type: type, //类型
           uid: data.uid, //key
@@ -95,12 +96,14 @@
             <template #tab>
               <n-icon :size="18" v-if="panel.type == 'stable'" :component="DataClass" style="margin-right: 5px" />
               <n-icon :size="18" v-if="panel.type == 'table'" :component="DataTable" style="margin-right: 5px" />
+              <n-icon :size="18" v-if="panel.type == 'tablechange'" :component="DataTable" style="margin-right: 5px" />
               {{ panel.name }}
             </template>
             <div style="padding: 0 10px">
               <n-message-provider>
                 <table-view v-if="panel.type == 'table'" :table="panel.table" :dbname="panel.table.dbname" :link="panel.link"></table-view>
                 <s-table-view v-if="panel.type == 'stable'" :table="panel.table" :dbname="panel.table.dbname" :link="panel.link"></s-table-view>
+                <CreateTable v-if="panel.type == 'tablechange'" :dbname="panel.dbname" :link="panel.link"></CreateTable>
               </n-message-provider>
             </div>
           </n-tab-pane>
